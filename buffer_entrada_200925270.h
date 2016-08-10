@@ -36,7 +36,8 @@ inline int leer_entrada_consola ( char *_cadena )
 	}
 
 	if(DEPURADOR)
-		printf("\n\t(Todo Concatenado: %s)\n", entrada);
+		printf("\n\t(Todo Concatenado: %s)", entrada);
+	strcpy( _cadena, entrada );
 	return true;
 }
 

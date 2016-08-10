@@ -14,13 +14,15 @@ static inline void ciclo_programa ()
 	int opcion = 0;
 	do {
 		char cadena[256];
+		accion *lista;
 		if( !leer_entrada_consola ( cadena ) ) {
 			printf("\n\t Error: La cadena es demasiado grande para procesar.");
 			continue;
 		}
 
+		analizar_entrada ( cadena, &lista );
 		//analizar_entrada(cadena,lista_acciones,lista_errores);
 		//ejecutar_acciones(opcion,lista_acciones,lista_errores);
 	} while (opcion != 0);
-
+	printf("\n");
 }

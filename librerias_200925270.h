@@ -34,6 +34,7 @@
 
 #include "parametro_200925270.h"
 #include "instruccion_200925270.h"
+#include "analizador_200925270.h"
 
 
 #endif // LIBRERIA_H

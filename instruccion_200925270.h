@@ -10,12 +10,23 @@ struct accion {
 
 typedef struct accion accion;
 
+enum TIPO_ACCION {
+	MKDISK = 0,
+	RMDISK,
+	FDISK,
+	MOUNT,
+	UNMOUNT
+};
+
+typedef enum TIPO_ACCION TIPO_ACCION;
+
 /*
  *
  *
  *
  */
 
+void agregar_accion ( accion **, int );
 void agregar_instruccion ( accion **, int, parametro ** );
 static inline void insertar_instruccion ( accion **, accion * );
 
@@ -24,6 +35,7 @@ static inline accion *pop_instruccion ( accion ** );
 
 static inline accion *nueva_instruccion ( int, parametro ** );
 inline int cantidad_instrucciones ( accion * );
+static inline accion *nueva_accion ( int );
 
 /*
  *
@@ -32,7 +44,11 @@ inline int cantidad_instrucciones ( accion * );
  */
 
 void agregar_instruccion ( accion **_lista, int _tipo, parametro **_lista_parametros ) {
-	insertar_instruccion ( accion **_lista, nueva_instruccion ( _tipo, _lista_parametros ) );
+	insertar_instruccion ( _lista, nueva_instruccion ( _tipo, _lista_parametros ) );
+}
+
+void agregar_accion ( accion **_lista, int _tipo ) {
+	insertar_instruccion ( _lista, nueva_accion ( _tipo ) );
 }
 
 static inline void insertar_instruccion ( accion **_lista, accion *_instruccion ) {
@@ -63,7 +79,15 @@ inline int cantidad_instrucciones ( accion *_lista ) {
 	return ( _lista == NULL ) ? 0 : 1 + cantidad_instrucciones ( _lista->siguiente );
 }
 
-static inline accion *nueva_instruccion ( int _tipo, parametro **_lista ) {
+inline accion *nueva_accion ( int _tipo ) {
+   accion *nueva = malloc ( sizeof( struct accion ) );
+   nueva->parametros = NULL;
+   nueva->siguiente = NULL;
+   nueva->tipo = _tipo;
+   return nueva;
+}
+
+inline accion *nueva_instruccion ( int _tipo, parametro **_lista ) {
    accion *nueva = malloc ( sizeof( struct accion ) );
    nueva->parametros = (*_lista);
    nueva->siguiente = NULL;

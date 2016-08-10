@@ -1,6 +1,6 @@
 //parametro_200925270.h
-#ifndef INSTRUCCION_H
-#define INSTRUCCION_H
+#ifndef PARAMETRO_H
+#define PARAMETRO_H
 
 struct parametro {
 	struct parametro *siguiente;
@@ -10,6 +10,27 @@ struct parametro {
 
 typedef struct parametro parametro;
 
+enum TIPO_PARAMETRO {
+	SIZE = 0,
+	UNIT,
+	PATH,
+	NAME,
+	TYPE,
+	FIT,
+	DELETE,
+	ADD,
+	ID,
+	K,
+	M,
+	H,
+	I,
+	N,
+	S,
+	LINK
+};
+
+typedef enum TIPO_PARAMETRO TIPO_PARAMETRO;
+
 /*
  *
  *
@@ -17,13 +38,13 @@ typedef struct parametro parametro;
  */
 
 void agregar_parametro ( parametro **, int, char [] );
-static inline void insertar_parametro ( parametro **, parametro * );
+inline void insertar_parametro ( parametro **, parametro * );
 
 int cantidad_parametros ( parametro * );
 int buscar_parametro ( parametro **, int, char * );
 
 static inline int obtener_parametro ( parametro **, char * );
-static inline parametro *nuevo_parametro ( int, char [] );
+inline parametro *nuevo_parametro ( int, char [] );
 
 /*
  *
@@ -35,7 +56,7 @@ void agregar_parametro ( parametro **_lista, int _tipo, char _valor[] ) {
 	insertar_parametro ( _lista, nuevo_parametro ( _tipo, _valor ) );
 }
 
-static inline void insertar_parametro ( parametro **_lista, parametro *_parametro ) {
+inline void insertar_parametro ( parametro **_lista, parametro *_parametro ) {
 	( (*_lista) == NULL ) ? (*_lista) = _parametro : insertar_parametro ( &(*_lista)->siguiente, _parametro );
 }
 
@@ -58,6 +79,14 @@ int buscar_parametro ( parametro **_lista, int _tipo, char *_buffer ) {
 // 	imprimir_lista_discos ( _lista );
 // }
 
+inline parametro *nuevo_parametro ( int _tipo, char _valor[] ) {
+   parametro *nuevo = malloc ( sizeof( struct parametro ) );
+   strcpy( nuevo->valor, _valor );
+   nuevo->siguiente = NULL;
+   nuevo->tipo = _tipo;
+   return nuevo;
+}
+
 static inline int obtener_parametro ( parametro **_lista, char *_buffer ) {
 	parametro *eliminar = (*_lista);
 	strcpy ( _buffer, (*_lista)->valor );
@@ -66,12 +95,4 @@ static inline int obtener_parametro ( parametro **_lista, char *_buffer ) {
 	return 1;
 }
 
-static inline parametro *nuevo_parametro ( int _tipo, char _valor[] ) {
-   parametro *nuevo = malloc ( sizeof( struct parametro ) );
-   strcpy( nuevo->valor, _valor );
-   nuevo->siguiente = NULL;
-   nuevo->tipo = _tipo;
-   return nuevo;
-}
-
-#endif // INSTRUCCION_H
+#endif // PARAMETRO_H

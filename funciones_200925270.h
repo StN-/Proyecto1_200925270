@@ -22,7 +22,7 @@ void leer_entrada_formato_cadena ( char *, const char * );
 int leer_entrada_formato_decimal ( const char *, int );
 
 // int validar_formato_numerico ( int *, char [] );
-// static inline void pasar_cadena_minusculas ( char *, char [] );
+void convertir_minusculas ( char *, char [] );
 
 inline void reemplazar ( char *, char [], char [], int );
 
@@ -113,13 +113,13 @@ void leer_entrada_formato_cadena ( char *_buffer, const char *_info ) {
 // 	return 1;
 // }
 
-// static inline void pasar_cadena_minusculas ( char *_cadena_min, char _cadena_may[] )
-// {
-// 	int i = 0;
-// 	char buffer[128] = "";
-// 	for ( ; i < strlen ( _cadena_may ); ++i )
-// 		buffer[i] = (char) tolower ( _cadena_may[i] );
-//   strcpy ( _cadena_min, buffer );
-// }
+void convertir_minusculas ( char *_cadena_min, char _cadena_may[] )
+{
+	int i = 0;
+	char buffer[128] = "";
+	for ( ; i < strlen ( _cadena_may ); ++i )
+		buffer[i] = (char) tolower ( _cadena_may[i] );
+  strcpy ( _cadena_min, buffer );
+}
 
 #endif // FUNCION_H
