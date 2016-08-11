@@ -13,7 +13,7 @@ static inline accion *parsear_cadena_entrada ( char [], int );
 
 static inline int validar_instruccion ( char [] );
 static inline parametro *validar_formato_parametro ( char [] );
-static inline int validar_parametro ( char [] );
+static inline parametro *validar_parametro ( char [], char [] );
 
 /*
  *
@@ -24,9 +24,13 @@ static inline int validar_parametro ( char [] );
 inline void analizar_entrada ( char _entrada[], accion **_instruccion )
 {
 	if(DEPURADOR)
-		printf("\n\t(Cadena Entrada: %s)", _entrada);
+		printf("\n\t(Entrada Del Analizador: %s)", _entrada);
 	int longitud = strlen ( _entrada );
 	(*_instruccion) = parsear_cadena_entrada ( _entrada, longitud );
+	//accion *instruccion = parsear_cadena_entrada ( _entrada, longitud );
+	if(DEPURADOR)
+		imprimir_instrucciones ( *_instruccion );
+	// imprimir salida del analizador...
 }
 
 static inline accion *parsear_cadena_entrada ( char _entrada[], int _longitud )
@@ -195,7 +199,7 @@ static inline int validar_instruccion ( char _instruccion[] )
 	else if ( strcmp( _instruccion, "exec" ) == 0 )
 		return 0;
 	else if ( strcmp( _instruccion, "exit" ) == 0 )
-		return 0;
+		return EXIT;
 	else if ( strcmp( _instruccion, "mkgrp" ) == 0 )
 		return 0;
 	else if ( strcmp( _instruccion, "mkusr" ) == 0 )
@@ -226,7 +230,7 @@ static inline int validar_instruccion ( char _instruccion[] )
     	printf("   (Omitido)\n");
     	return 0;
     } else {
-		printf("\n\t(ERROR INSTRUCCION: %s)", _instruccion );
+		printf("\n\t(INSTRUCCION NO RECONOCIDA: %s)", _instruccion );
 		return 0;
 	}
 }
@@ -236,77 +240,122 @@ static inline parametro *validar_formato_parametro ( char _argumento[] )
 	char nombre_parametro[32];
 	char valor_parametro[126];
 	if ( sscanf( _argumento, "-%[^-:]::%[^:]", nombre_parametro, valor_parametro ) == 2 ) {
-		sscanf( valor_parametro, "\"%[^\"]\"", valor_parametro );
-		if(DEPURADOR)
-			printf("\n\t(Nombre Parametro: %s)", nombre_parametro);
-		if(DEPURADOR)
-			printf("\n\t(Valor del Parametro: %s)", valor_parametro);
-		return nuevo_parametro ( validar_parametro ( nombre_parametro ), valor_parametro );
+		return validar_parametro ( nombre_parametro, valor_parametro );
 	} else if ( sscanf( _argumento, "–%[^–:]::%[^:]", nombre_parametro, valor_parametro ) == 2 ) {
-		sscanf( valor_parametro, "\"%[^\"]\"", valor_parametro );
-		if(DEPURADOR)
-			printf("\n\t(Nombre Parametro: %s)", nombre_parametro);
-		if(DEPURADOR)
-			printf("\n\t(Valor del Parametro: %s)", valor_parametro);
-		return nuevo_parametro ( validar_parametro ( nombre_parametro ), valor_parametro );
+		return validar_parametro ( nombre_parametro, valor_parametro );
 	} else if ( sscanf( _argumento, "+%[^+:]::%[^:]", nombre_parametro, valor_parametro ) == 2 ) {
-		sscanf( valor_parametro, "\"%[^\"]\"", valor_parametro );
-		if(DEPURADOR)
-			printf("\n\t(Nombre Parametro: %s)", nombre_parametro);
-		if(DEPURADOR)
-			printf("\n\t(Valor del Parametro: %s)", valor_parametro);
-		return nuevo_parametro ( validar_parametro ( nombre_parametro ), valor_parametro );
+		return validar_parametro ( nombre_parametro, valor_parametro );
 	} else if ( sscanf( _argumento, "-%[^-]", nombre_parametro ) == 1 ) {
-		if(DEPURADOR)
-			printf("\n\t(Nombre Parametro: %s)", nombre_parametro);
-		return nuevo_parametro ( validar_parametro ( nombre_parametro ), "" );
+		return validar_parametro ( nombre_parametro, "" );
 	} else if ( sscanf( _argumento, "–%[^–]", nombre_parametro ) == 1 ) {
-		if(DEPURADOR)
-			printf("\n\t(Nombre Parametro: %s)", nombre_parametro);
-		return nuevo_parametro ( validar_parametro ( nombre_parametro ), "" );
+		return validar_parametro ( nombre_parametro, "" );
 	} else if ( sscanf( _argumento, "+%[^+]", nombre_parametro ) == 1 ) {
-		if(DEPURADOR)
-			printf("\n\t(Nombre Parametro: %s)", nombre_parametro);
-		return nuevo_parametro ( validar_parametro ( nombre_parametro ), "" );
+		return validar_parametro ( nombre_parametro, "" );
 	} else {
-		if(DEPURADOR)
-			printf("\n\t(Error Parametro: %s)", _argumento);
-		return nuevo_parametro ( validar_parametro ( "error" ), _argumento );
+		return validar_parametro ( "error", _argumento );
 	}
-
 	return NULL;
 }
 
-static inline int validar_parametro ( char _parametro[] )
+static inline parametro *validar_parametro ( char _nombre[], char _valor[] )
 {
-	convertir_minusculas ( _parametro, _parametro );
-	if ( strcmp( _parametro, "id" ) == 0 )
-		return ID;
- 	else if ( strcmp( _parametro, "fit" ) == 0 )
- 		return FIT;
- 	else if ( strcmp( _parametro, "add" ) == 0 )
- 		return ADD;
- 	else if ( strcmp( _parametro, "size" ) == 0 )
- 		return SIZE;
-	else if ( strcmp( _parametro, "unit" ) == 0 )
-		return UNIT;
-	else if ( strcmp( _parametro, "path" ) == 0 )
-		return PATH;
-	else if ( strcmp( _parametro, "type" ) == 0 )
-		return TYPE;
-	else if ( strcmp( _parametro, "name" ) == 0 )
-		return NAME;
-	else if ( strcmp( _parametro, "delete" ) == 0 )
-		return DELETE;
+	convertir_minusculas ( _nombre, _nombre );
+	if ( strcmp( _nombre, "fit" ) == 0 )
+	{
+		convertir_minusculas ( _valor, _valor );
+		if(DEPURADOR)
+			printf("\n\t(Nombre Parametro: %s)", _nombre);
+		if(DEPURADOR)
+			printf("\n\t(Valor del Parametro: %s)", _valor);
+		return nuevo_parametro ( FIT, _valor );
+ 	} 
+ 	else if ( strcmp( _nombre, "add" ) == 0 )
+ 	{
+		if(DEPURADOR)
+			printf("\n\t(Nombre Parametro: %s)", _nombre);
+		if(DEPURADOR)
+			printf("\n\t(Valor del Parametro: %s)", _valor);
+ 		return nuevo_parametro ( ADD, _valor );
+ 	} 
+ 	else if ( strcmp( _nombre, "size" ) == 0 )
+ 	{
+		if(DEPURADOR)
+			printf("\n\t(Nombre Parametro: %s)", _nombre);
+		if(DEPURADOR)
+			printf("\n\t(Valor del Parametro: %s)", _valor);
+ 		return nuevo_parametro ( SIZE, _valor );
+ 	} 
+ 	else if ( strcmp( _nombre, "unit" ) == 0 )
+ 	{
+ 		convertir_minusculas ( _valor, _valor );
+		if(DEPURADOR)
+			printf("\n\t(Nombre Parametro: %s)", _nombre);
+		if(DEPURADOR)
+			printf("\n\t(Valor del Parametro: %s)", _valor);
+		return nuevo_parametro ( UNIT, _valor );
+	} 
+	else if ( strcmp( _nombre, "path" ) == 0 )
+	{
+		sscanf( _valor, "\"%[^\"]\"", _valor );
+		if(DEPURADOR)
+			printf("\n\t(Nombre Parametro: %s)", _nombre);
+		if(DEPURADOR)
+			printf("\n\t(Valor del Parametro: %s)", _valor);
+		return nuevo_parametro ( PATH, _valor );
+	} 
+	else if ( strcmp( _nombre, "type" ) == 0 )
+	{
+		convertir_minusculas ( _valor, _valor );
+		if(DEPURADOR)
+			printf("\n\t(Nombre Parametro: %s)", _nombre);
+		if(DEPURADOR)
+			printf("\n\t(Valor del Parametro: %s)", _valor);
+		return nuevo_parametro ( TYPE, _valor );
+	} 
+	else if ( strcmp( _nombre, "name" ) == 0 )
+	{
+		sscanf( _valor, "\"%[^\"]\"", _valor );
+		if(DEPURADOR)
+			printf("\n\t(Nombre Parametro: %s)", _nombre);
+		if(DEPURADOR)
+			printf("\n\t(Valor del Parametro: %s)", _valor);
+		return nuevo_parametro ( NAME, _valor );
+	} 
+	else if ( strcmp( _nombre, "delete" ) == 0 )
+	{
+		convertir_minusculas ( _valor, _valor );
+		if(DEPURADOR)
+			printf("\n\t(Nombre Parametro: %s)", _nombre);
+		if(DEPURADOR)
+			printf("\n\t(Valor del Parametro: %s)", _valor);
+		return nuevo_parametro ( DELETE, _valor );
+	} 
+	else if ( strcmp( _nombre, "error" ) == 0 )
+	{
+		if(DEPURADOR)
+			printf("\n\t(Nombre Parametro: %s)", _nombre);
+		if(DEPURADOR)
+			printf("\n\t(Valor del Parametro: %s)", _valor);
+		return nuevo_parametro ( -1, _valor );
+	}
 	else
-		return -1; // ERROR
+	{
+		if(DEPURADOR)
+			printf("\n\t(Nombre Parametro: %s)", _nombre);
+		if(DEPURADOR)
+			printf("\n\t(Valor del Parametro: %s)", _valor);
+		return nuevo_parametro ( -1, _valor );
+	}
+
+	// if ( strcmp( _parametro, "id" ) == 0 )
+	// 	return ID;
+ // 	else 
 
 	/*
 	 *
 	 * FalTA ID(n) : id1, id2, id3
 	 *
 	 */	
-
 }
 
 

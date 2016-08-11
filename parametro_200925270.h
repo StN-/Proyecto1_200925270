@@ -43,8 +43,11 @@ inline void insertar_parametro ( parametro **, parametro * );
 int cantidad_parametros ( parametro * );
 int buscar_parametro ( parametro **, int, char * );
 
-static inline int obtener_parametro ( parametro **, char * );
 inline parametro *nuevo_parametro ( int, char [] );
+static inline int obtener_parametro ( parametro **, char * );
+
+inline void imprimir_parametros ( parametro * );
+static inline void imprimir_lista_parametros ( parametro * );
 
 /*
  *
@@ -69,15 +72,21 @@ int buscar_parametro ( parametro **_lista, int _tipo, char *_buffer ) {
 		obtener_parametro ( _lista, _buffer ) : buscar_parametro ( &(*_lista)->siguiente, _tipo, _buffer );
 }
 
-// inline void imprimir_parametros ( accion *_lista ) {
-// 	printf("   Lista De Particiones Montadas.\n");
-// 	if ( _lista == NULL ) {
-// 		printf("    -Vacia\n");
-// 		return;
-// 	}
+inline void imprimir_parametros ( parametro *_lista )
+{
+	printf("\n\t(Parametros:)");
+	if ( _lista == NULL ) {
+		printf("\n\t  (Lista Vacia)");
+		return;
+	}
+	imprimir_lista_parametros ( _lista );
+}
 
-// 	imprimir_lista_discos ( _lista );
-// }
+static inline void imprimir_lista_parametros ( parametro *_lista ) {
+	if (_lista == NULL) return;
+	printf("\n\t  (Parametro -> tipo: %d, valor: %s)", _lista->tipo, _lista->valor );
+	imprimir_lista_parametros ( _lista->siguiente );
+}
 
 inline parametro *nuevo_parametro ( int _tipo, char _valor[] ) {
    parametro *nuevo = malloc ( sizeof( struct parametro ) );
@@ -92,7 +101,7 @@ static inline int obtener_parametro ( parametro **_lista, char *_buffer ) {
 	strcpy ( _buffer, (*_lista)->valor );
 	(*_lista) = (*_lista)->siguiente;
 	free ( eliminar );
-	return 1;
+	return true;
 }
 
 #endif // PARAMETRO_H

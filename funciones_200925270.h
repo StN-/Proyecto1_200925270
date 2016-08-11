@@ -12,8 +12,7 @@
 // inline int validar_archivo ( char [] );
 
 void concatenar ( char *, int _cantidad, ... );
-
-// inline void tiempo_actual( char *, int );
+inline void tiempo_actual( char *, int );
 
 // void imprimir_v1 ( const char *, ... );
 // void imprimir_v2 ( int, ... );
@@ -21,7 +20,7 @@ void concatenar ( char *, int _cantidad, ... );
 void leer_entrada_formato_cadena ( char *, const char * );
 int leer_entrada_formato_decimal ( const char *, int );
 
-// int validar_formato_numerico ( int *, char [] );
+int validar_convertir_decimal ( int *, char [] );
 void convertir_minusculas ( char *, char [] );
 
 inline void reemplazar ( char *, char [], char [], int );
@@ -77,13 +76,13 @@ inline void reemplazar ( char *_buffer, char _sub_cadena[], char _contenido[], i
 // 	return (access( _ruta, F_OK )==-1)?0:1;
 // }
 
-// inline void tiempo_actual( char *_fecha, int _tamano )
-// {
-//     time_t ahorita;
-//     time( &ahorita );
-//     strncpy( _fecha, ctime(&ahorita), _tamano -1 );
-//     _fecha[_tamano-1] = '\0';
-// }
+inline void tiempo_actual( char *_fecha, int _tamano )
+{
+    time_t ahorita;
+    time( &ahorita );
+    strncpy( _fecha, ctime(&ahorita), _tamano -1 );
+    _fecha[_tamano-1] = '\0';
+}
 
 int leer_entrada_formato_decimal ( const char *_info, int _valor ) {
 	char entrada[5];
@@ -100,18 +99,18 @@ void leer_entrada_formato_cadena ( char *_buffer, const char *_info ) {
 		sscanf( entrada, "%[^\n]", _buffer );
 }
 
-// int validar_formato_numerico ( int *_valor, char _cadena[] )
-// {
-// 	int i = 0; 
-// 	for ( ; i < strlen( _cadena ); ++i ) {
-// 		if ( _cadena[i] != '-' && _cadena[i] != '+' )
-// 			if ( !isdigit(_cadena[i]) )
-// 				return 0;
-// 	}
+int validar_convertir_decimal ( int *_valor, char _cadena[] )
+{
+	int i = 0; 
+	for ( ; i < strlen( _cadena ); ++i ) {
+		if ( _cadena[i] != '-' && _cadena[i] != '+' )
+			if ( !isdigit(_cadena[i]) )
+				return 0;
+	}
 
-// 	sscanf( _cadena, "%d", _valor );
-// 	return 1;
-// }
+	sscanf( _cadena, "%d", _valor );
+	return 1;
+}
 
 void convertir_minusculas ( char *_cadena_min, char _cadena_may[] )
 {

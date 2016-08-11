@@ -15,7 +15,8 @@ enum TIPO_ACCION {
 	RMDISK,
 	FDISK,
 	MOUNT,
-	UNMOUNT
+	UNMOUNT,
+	EXIT
 };
 
 typedef enum TIPO_ACCION TIPO_ACCION;
@@ -36,6 +37,9 @@ static inline accion *pop_instruccion ( accion ** );
 static inline accion *nueva_instruccion ( int, parametro ** );
 inline int cantidad_instrucciones ( accion * );
 static inline accion *nueva_accion ( int );
+
+inline void imprimir_instrucciones ( accion * );
+static inline void imprimir_lista_instrucciones ( accion * );
 
 /*
  *
@@ -65,15 +69,21 @@ static inline accion *pop_instruccion ( accion **_lista ) {
 	return temp;
 }
 
-// inline void imprimir_instrucciones ( accion *_lista ) {
-// 	printf("   Lista De Particiones Montadas.\n");
-// 	if ( _lista == NULL ) {
-// 		printf("    -Vacia\n");
-// 		return;
-// 	}
+inline void imprimir_instrucciones ( accion *_lista ) {
+	printf("\n\t(Instrucciones:)");
+	if ( _lista == NULL ) {
+		printf("\n\t  (Lista Vacia)");
+		return;
+	}
+	imprimir_lista_instrucciones ( _lista );
+}
 
-// 	imprimir_lista_discos ( _lista );
-// }
+static inline void imprimir_lista_instrucciones ( accion *_lista ) {
+	if (_lista == NULL) return;
+	printf("\n\t  (Instruccion -> tipo: %d)", _lista->tipo );
+	imprimir_lista_parametros ( _lista->parametros );
+	imprimir_lista_instrucciones ( _lista->siguiente );
+}
 
 inline int cantidad_instrucciones ( accion *_lista ) {
 	return ( _lista == NULL ) ? 0 : 1 + cantidad_instrucciones ( _lista->siguiente );
