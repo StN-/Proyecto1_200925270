@@ -146,7 +146,6 @@ inline void validar_montar_disco ( parametro **_parametros, parametro **_errores
 	if( cantidad_parametros ( (*_parametros) ) == 0 ) {
 		imprimir_particiones_montadas ( festplatten );
 		return;
-		//agregar_parametro ( &errores, ERROR, "\n\t[ERROR] : Debe de ingresar al menos un parametro." );
 	}
 
 	/*
@@ -223,7 +222,7 @@ inline void validar_desmontar_disco ( parametro **_parametros, parametro **_erro
 	if(DEPURADOR)
 		printf("\n\t(Si cumple con todos los requisitos para desmontar una Particion)");
 
-	//verificar_desmontar_disco ( arg_id );
+	verificar_desmontar_disco ( arg_id );
 }
 
 #endif // ADMINISTRADOR_DISCO_H

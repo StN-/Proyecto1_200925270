@@ -37,15 +37,19 @@ static inline void montar_festplatte ( festplatte **, char [], char [], int, cha
 static inline festplatte *neu_festplatte ( char [], int );
 static inline partition *neu_partition ( char [], char [] );
 
-
 inline void imprimir_particiones_montadas ( festplatte * );
 static inline void imprimir_festplatten_montados ( festplatte * );
 static inline void imprimir_partitionen_montadas ( partition * );
 
-
 inline int buscar_id ( festplatte *, char [], char *, char * );
 static inline int buscar_id_festplatte ( festplatte *, char [], char *, char * );
 static inline int buscar_id_partition ( partition *, char [], char *, char * );
+
+
+inline int desmontar_particion ( festplatte **, char [] );
+static inline int desmontar_id_partition ( partition **, char [] );
+static inline int desmontar_id_festplatte ( festplatte **, char [] );
+
 
  /*
   *
@@ -75,6 +79,7 @@ static inline void montar_partition ( partition **_partitionen, char _arg_name[]
 		char id[5] = "";
 		sprintf( id, "vd%c%d", _letra, _numero );
 		(*_partitionen) = neu_partition ( _arg_name, id );
+		printf( "\n\tSe Asigno el id <<%s>> a la Particion <<%s>>, exitosamente.", id, _arg_name );
 	} else {
 		if( strcmp((*_partitionen)->nombre, _arg_name ) != 0 )
 			montar_partition ( &(*_partitionen)->siguiente, _arg_name, _numero, ++_letra );
@@ -100,8 +105,8 @@ static inline int buscar_id_festplatte ( festplatte *_festplatten, char _id[], c
 
 	return buscar_id_festplatte ( _festplatten->siguiente, _id, _arg_path, _arg_name );
 }
-
-static inline int buscar_id_partition ( partition *_partitionen, char _id[], char *_arg_path, char *_arg_name ) {
+static inline int buscar_id_partition ( partition *_partitionen, char _id[], char *_arg_path, char *_arg_name )
+{
 	if ( _partitionen == NULL )
 		return false;
 
@@ -111,6 +116,47 @@ static inline int buscar_id_partition ( partition *_partitionen, char _id[], cha
 	}
 
 	return buscar_id_partition ( _partitionen->siguiente, _id, _arg_path, _arg_name );
+}
+
+
+
+inline int desmontar_particion ( festplatte **_festplatten, char _id[] ) {
+	return ( _festplatten == NULL ) ? false : desmontar_id_festplatte ( _festplatten, _id );
+}
+
+static inline int desmontar_id_festplatte ( festplatte **_festplatten, char _id[] )
+{
+	if ( (*_festplatten) == NULL ) 
+		return false;
+
+	if ( desmontar_id_partition ( &(*_festplatten)->partitionen, _id ) ) 
+	{
+		if ( (*_festplatten)->partitionen == NULL ) 
+		{
+			festplatte *temp = *_festplatten;
+			(*_festplatten) = (*_festplatten)->siguiente;
+			free ( temp );
+		}
+
+		return true;
+	}
+	return desmontar_id_festplatte ( &(*_festplatten)->siguiente, _id );
+}
+static inline int desmontar_id_partition ( partition **_partitionen, char _id[] )
+{
+	if ( _partitionen == NULL )
+		return false;
+
+	if ( strcmp ( (*_partitionen)->id, _id ) == 0 )
+	{
+		partition *temp = (* _partitionen);
+		(*_partitionen) = (*_partitionen)->siguiente;
+		printf( "\n\tSe Desmonto la partion <<%s>>, exitosamente.", temp->nombre );
+		free ( temp );
+		return true;
+	}
+
+	return desmontar_id_partition ( &(*_partitionen)->siguiente, _id );
 }
 
 

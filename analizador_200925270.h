@@ -28,8 +28,9 @@ inline void analizar_entrada ( char _entrada[], accion **_instruccion )
 	printf("\n\tAnalizando Cadena de Entrada.");
 
 	int longitud = strlen ( _entrada );
+
 	(*_instruccion) = parsear_cadena_entrada ( _entrada, longitud );
-	//accion *instruccion = parsear_cadena_entrada ( _entrada, longitud );
+
 	if(DEPURADOR)
 		printf("\n\t(Salida Del Analizador)");
 
@@ -186,7 +187,7 @@ static inline accion *parsear_cadena_entrada ( char _entrada[], int _longitud )
 	strcpy( buffer, "" );
 
 	if (instruccion == NULL && parametros != NULL) {
-		printf("\n\t Error: La entrada no concuerda con la sintaxis.");
+		printf( "\n\t[ERROR] : La entrada no concuerda con la sintaxis.");
 		return NULL;
 	}
 
@@ -247,7 +248,7 @@ static inline int validar_instruccion ( char _instruccion[] )
     	printf("   (Omitido)\n");
     	return 0;
     } else {
-		printf("\n\t(INSTRUCCION NO RECONOCIDA: %s)", _instruccion );
+		printf( "\n\t[ERROR] : INSTRUCCION NO RECONOCIDA: %s.", _instruccion );
 		return 0;
 	}
 }
@@ -349,7 +350,7 @@ static inline parametro *validar_parametro ( char _nombre[], char _valor[] )
 	} 
 	else if ( strcmp( _nombre, "id" ) == 0 )
 	{
-		convertir_minusculas ( _valor, _valor );
+		// convertir_minusculas ( _valor, _valor );
 		if(DEPURADOR)
 			printf("\n\t(Nombre Parametro: %s)", _nombre);
 		if(DEPURADOR)

@@ -76,14 +76,16 @@ inline void verificar_montar_disco ( char _arg_path[], char _arg_name[] )
 		imprimir_particiones_montadas ( festplatten );
 }
 
-// inline void verificar_desmontar_disco ( char _arg_id[] )
-// {
-// 	if ( !buscar_disco_virtual_montado ( lista_discos, _arg_id ) ) {
-// 		printf( "   -Error : El id <<%s>> No exite.\n", _arg_id );
-// 	}
+inline void verificar_desmontar_disco ( char _arg_id[] )
+{
+	if(DEPURADOR)
+		printf("\n\t(Entrada Del Manejador de Disco)");
+	printf("\n\tValidando Datos para desmontar particion.");
 
-// 	//desmontarlo....
-// }
+	if ( !desmontar_particion ( &festplatten, _arg_id ) ) {
+		printf( "\n\t[ERROR] : No existe la Asignacion del id <<%s>>, a una Particion.", _arg_id );
+	}
+}
 
 
 #endif // MANEJADOR_DISCO_H

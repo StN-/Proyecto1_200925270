@@ -15,7 +15,9 @@ static inline void crear_primaria_extendida ( char [], char [], int, char, char 
 inline void verificar_eliminacion_particion ( char [], char [], char );
 static inline void eliminar_primaria_extendida ( char [], char [], char );
 static inline int eliminar_logica ( char [], char [], int, int );
-// inline void verificar_modificacion_particion ( char [], char [], int );
+
+inline void verificar_modificacion_particion ( char [], char [], int );
+static inline void modificar_particion ( char [], char [], int );
 
 
 
@@ -71,6 +73,13 @@ inline void verificar_modificacion_particion ( char _arg_path[], char _arg_name[
 		printf( "\n\t[ERROR] : El archivo <<%s>> No exite.", _arg_path );
 		return;
 	}
+
+	modificar_particion ( _arg_path, _arg_name, _arg_add );
+}
+
+static inline void modificar_particion ( char _arg_path[], char _arg_name[], int _arg_size )
+{
+
 }
 
 static inline void crear_primaria_extendida ( char _arg_path[], char _arg_name[], int _arg_size, char _arg_type, char _arg_fit )

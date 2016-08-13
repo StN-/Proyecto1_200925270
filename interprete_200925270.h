@@ -51,7 +51,10 @@ inline int ejecutar_instrucciones ( accion **_instrucciones )
 			// mount –path::"/home/wxqzsvtyk/Plantillas/disk.dk" –name::"Particion7"
 			validar_montar_disco ( &(*_instrucciones)->parametros, &errores );
 		} break;
-		// case UNMOUNT: {} break;
+		case UNMOUNT: {
+			// unmount -id::vda1
+			validar_desmontar_disco ( &(*_instrucciones)->parametros, &errores );
+		} break;
 		case REP: {
 			// rep -id::vda1 –path::"/home/wxqzsvtyk/Plantillas/mbr" -name::mbr
 			// rep -id::vda1 –path::"/home/wxqzsvtyk/Plantillas/mbr.png" -name::disk
@@ -65,18 +68,24 @@ inline int ejecutar_instrucciones ( accion **_instrucciones )
 			return true;
 		} break;
 		case EXIT: {
+			printf("\n\tSaliendo del Programa.");
 			return false;
 		} break;
-		// case 6: {} break;
-		// case 7: {} break;
-		default: {} break;
+		default: {
+		} break;
 	}
 
-	printf("\n\t(ERRORES ENCONTRADOS:)");
-	imprimir_parametros ( errores );
+	if ( errores != NULL ) {
+		printf("\n\t(ERRORES ENCONTRADOS:)");
+		imprimir_parametros ( errores );		
+	}
+
 	printf("\n");
-	printf("\n\t(PARAMETROS DEMAS:)");
-	imprimir_parametros ( instrucciones->parametros );
+
+	if ( instrucciones->parametros != NULL ) {
+		printf("\n\t(LOS SIGUIENTES PARAMETROS NO SE RECONOCIERON:)");
+		imprimir_parametros ( instrucciones->parametros );	 
+	}
 
 	return true;
 }
@@ -84,11 +93,12 @@ inline int ejecutar_instrucciones ( accion **_instrucciones )
 inline void validar_ejecucion_archivo ( parametro **_parametros, parametro **_errores )
 {
 	if(DEPURADOR)
-		printf("\n\t(Entrada De Ejecucion de Archivos)");
+		printf("\n\t(Entrada Del Administrador de Archivos)");
+	printf("\n\tValidando Parametros para la ejecucion del Archivo.");
 
 	parametro *errores = NULL;
 	if( cantidad_parametros ( (*_parametros) ) == 0 ) {
-		agregar_parametro ( &errores, ERROR, "Debe de ingresar al menos un parametro." );
+		agregar_parametro ( &errores, ERROR, "\n\t[ERROR] : Debe de ingresar al menos un parametro." );
 	}
 
 	/*
@@ -97,7 +107,7 @@ inline void validar_ejecucion_archivo ( parametro **_parametros, parametro **_er
 
 	char arg_path[128] = "";
 	if ( !buscar_parametro ( _parametros, PATH, arg_path ) ) {
-		agregar_parametro ( &errores, ERROR, "No existe el parametro <<path>>" );
+		agregar_parametro ( &errores, ERROR, "\n\t[ERROR] : No existe el parametro <<path>>" );
 	}
 
 	if( cantidad_parametros ( errores ) > 0 ) {
@@ -117,27 +127,24 @@ inline void validar_ejecucion_archivo ( parametro **_parametros, parametro **_er
 
 static inline void verificar_ejecucion_archivo ( char _arg_path[] )
 {
-	// char *sub_string = strrchr ( _arg_path_dir, '/' );
-	// reemplazar ( _arg_path_dir, sub_string, "", strlen(sub_string) );
-	// if ( !validar_directorio ( _arg_path_dir ) ) {
-	// 	printf( "   -Error : El direcotrio <<%s>> No exite.\n", _arg_path_dir );
-	// 	return;
-	// }
+	if(DEPURADOR)
+		printf("\n\t(Entrada al Manejador de Archivos)");
+	printf( "\n\tValidando Datos para la ejecucion del Archivo." );
 
-	// if ( !validar_archivo ( _arg_path ) ) {
-	// 	printf( "   -Error : El archivo <<%s>> No exite.\n", _arg_path );
-	// 	return;
-	// }
+	if ( !existe_archivo ( _arg_path ) ) {
+		printf( "\n\t[ERROR] : El archivo <<%s>> No exite.", _arg_path );
+		return;
+	}
 	
 	FILE *archivo_script = fopen ( _arg_path, "r" );
 	if(!archivo_script) {
-		printf( "   -Error : El archivo <<%s>> No tiene permisos de lectura.\n", _arg_path );
+		printf( "\n\t[ERROR] : El archivo <<%s>> No tiene permisos de lectura.\n", _arg_path );
 		return;
 	}
 
-	printf(" Ejecutando Archivo <<%s>>.\n", _arg_path );
-
+	printf( "\n\tIniciando Lectura del Archivo <<%s>>.\n", _arg_path );
 	ejecutar_archivo_entrada ( &archivo_script );
+	printf( "\n\tFinalizando Lectura del Archivo <<%s>>.\n", _arg_path );
 
 	fclose (archivo_script);
 }
@@ -148,9 +155,7 @@ static inline void ejecutar_archivo_entrada ( FILE **_archivo )
 	char buffer[128] = "";
 	char cadena[256] = "";
 
-	int longitud = 0;	
-	//accion *instrucciones = NULL;
-
+	int longitud = 0;
 	while ( fgets ( buffer, sizeof(buffer), *_archivo ) )
 	{
 		accion *lista = NULL;
@@ -162,7 +167,7 @@ static inline void ejecutar_archivo_entrada ( FILE **_archivo )
 			if( longitud < 255 ) {
 				concatenar ( cadena, 1, buffer );
 			} else {
-				printf("\n\t Error: La cadena es demasiado grande para procesar.");
+				printf( "\n\t[ERROR] : La cadena es demasiado grande para procesar." );
 			}			
 			continue;
 		} else {
@@ -170,21 +175,15 @@ static inline void ejecutar_archivo_entrada ( FILE **_archivo )
 			if( longitud < 255 ) {
 				concatenar ( cadena, 1, buffer );
 			} else {
-				printf("\n\t Error: La cadena es demasiado grande para procesar.");
+				printf( "\n\t[ERROR] : La cadena es demasiado grande para procesar." );
 				continue;
 			}
 		}
 
 		analizar_entrada ( cadena, &lista );
-		//insertar_instruccion ( &instrucciones, lista );
 		ejecutar_instrucciones ( &lista );
 		strcpy ( cadena, "" );
 	}
-
-	
-	printf(" Finalizando Ejecucion del Archivo Script.\n");
 }
-
-static inline void cargar_archivo_entrada () {}
 
 #endif // INTERPRETE_H
