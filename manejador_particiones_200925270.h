@@ -20,7 +20,7 @@ static inline int eliminar_logica ( char [], char [], int, int );
 
 
 //static inline int verificar_localidad_particion ( particion [] );
-static inline int verificar_nombre_particion ( particion [], char [] );
+static inline int verificar_nombre_particion ( char [], particion [], char [] );
 static inline int verificar_particion_extendida ( particion [] );
 static inline int verificar_calcular_posicion_particion ( particion [], int, int, int );
 
@@ -32,77 +32,60 @@ static inline int verificar_calcular_posicion_particion ( particion [], int, int
 
 inline void verificar_creacion_particion ( char _arg_path[], char _arg_name[], int _arg_size, char _arg_type, char _arg_fit )
 {
-	// char arg_path_dir[128] = "";
-	// strcpy ( arg_path_dir, _arg_path );
-	// char *sub_string = strrchr ( arg_path_dir, '/' );
-	// reemplazar ( arg_path_dir, sub_string, "", strlen(sub_string) );
-	// if ( !validar_directorio ( arg_path_dir ) ) {
-	// 	printf( "   -Error : El direcotrio <<%s>> No exite.\n", arg_path_dir );
-	// 	return;
-	// }
+	if(DEPURADOR)
+		printf("\n\t(Entrada Del Manejador de Particiones)");
+	printf("\n\tValidando Datos para la Creacion de la Particion.");
 
-	// if ( !validar_archivo ( _arg_path ) ) {
-	// 	printf( "   -Error : El archivo <<%s>> No exite.\n", _arg_path );
-	// 	return;
-	// }
-
-	// if ( existe_nombre_particion_disco_virtual ( _arg_path, _arg_name ) ) {
-	// 	printf( "   -Error : Ya existe una particion con el nombre: <<%s>>.\n", _arg_name );
-	// 	return;
-	// }
+	if ( !existe_archivo ( _arg_path ) ) {
+		printf( "\n\t[ERROR] : El archivo <<%s>> No exite.", _arg_path );
+		return;
+	}
 
 	if ( _arg_type == 'L' )
 		crear_logica ( _arg_path, _arg_name, _arg_size, _arg_type, _arg_fit );
 	else
 		crear_primaria_extendida ( _arg_path, _arg_name, _arg_size, _arg_type, _arg_fit );
-
-	// int validar_asignacion = 0;
-	// int espacio_disponible = 0;
-	// espacio_disponible = validar_asignar_nueva_particion ( &validar_asignacion, _arg_path, _arg_size, _arg_name, _arg_type, _arg_fit );
-	// if ( !validar_asignacion ) {
-	// 	printf( "   -Error : No hay espacio suficiente para asignar la partida: <<%d>>.\n", espacio_disponible );
-	// 	return;
-	// }
 }
 
 inline void verificar_eliminacion_particion ( char _arg_path[], char _arg_name[], char _arg_type )
 {
-	// char arg_path_dir[128] = "";
-	// strcpy ( arg_path_dir, _arg_path );
-	// char *sub_string = strrchr ( arg_path_dir, '/' );
-	// reemplazar ( arg_path_dir, sub_string, "", strlen(sub_string) );
-	// if ( !validar_directorio ( arg_path_dir ) ) {
-	// 	printf( "   -Error : El direcotrio <<%s>> No exite.\n", arg_path_dir );
-	// 	return;
-	// }
+	if(DEPURADOR)
+		printf("\n\t(Entrada Del Manejador de Particiones)");
+	printf("\n\tValidando Datos para la Eliminacion de la Particion.");
 
-	// if ( !validar_archivo ( _arg_path ) ) {
-	// 	printf( "   -Error : El archivo <<%s>> No exite.\n", _arg_path );
-	// 	return;
-	// }
-
-	// if ( existe_nombre_particion_disco_virtual ( _arg_path, _arg_name ) ) {
-	// 	printf( "   -Error : Ya existe una particion con el nombre: <<%s>>.\n", _arg_name );
-	// 	return;
-	// }
+	if ( !existe_archivo ( _arg_path ) ) {
+		printf( "\n\t[ERROR] : El archivo <<%s>> No exite.", _arg_path );
+		return;
+	}
 
 	eliminar_primaria_extendida ( _arg_path, _arg_name, _arg_type );
 }
 
 inline void verificar_modificacion_particion ( char _arg_path[], char _arg_name[], int _arg_add )
 {
+	if(DEPURADOR)
+		printf("\n\t(Entrada Del Manejador de Particiones)");
+	printf("\n\tValidando Datos para la Modificacion de la Particion.");
 
+	if ( !existe_archivo ( _arg_path ) ) {
+		printf( "\n\t[ERROR] : El archivo <<%s>> No exite.", _arg_path );
+		return;
+	}
 }
 
 static inline void crear_primaria_extendida ( char _arg_path[], char _arg_name[], int _arg_size, char _arg_type, char _arg_fit )
 {
 	master *mbr = recuperar_registro( _arg_path, sizeof( struct master ), 0 );
 
-	if(DEPURADOR)
-		printf("\n\t(Validando tamano de la particion menor al disco.)");
-
 	if ( _arg_size >= TAMANO_DISCO_MBR( mbr ) ) {
-		printf("\n\tla particion es mayor al tamano del disco.");
+		printf( "\n\t[ERROR] : El Tamano de la Particion es Mayor al Tamano del Disco.");
+		free ( mbr );
+		return;
+	}
+
+	if ( _arg_size < (2 * KiB) ) {
+		printf( "\n\t[ERROR] : El Tamano Minimo de la Particion es de 2 KiB.");
+		free ( mbr );
 		return;
 	}
 
@@ -111,7 +94,7 @@ static inline void crear_primaria_extendida ( char _arg_path[], char _arg_name[]
 			printf("\n\t(Validando si ya hay una particion extentida.)");
 
 		if ( verificar_particion_extendida ( mbr->mbr_partition ) ) {
-			printf("\n\tya exite particion extendida.");
+			printf( "\n\t[ERROR] : Ya Existe una Particion Extentida Asignada." );
 			free ( mbr );
 			return;
 		}
@@ -120,10 +103,8 @@ static inline void crear_primaria_extendida ( char _arg_path[], char _arg_name[]
 	if(DEPURADOR)
 		printf("\n\t(Validando que no hay otra particion con el mismo nombre.)");
 
-	if ( verificar_nombre_particion ( mbr->mbr_partition, _arg_name ) ) {
-		printf("\n\tya exite particion con ese nombre.");
-		if(DEPURADOR)
-			printf("\n\t(7.3)");
+	if ( verificar_nombre_particion ( _arg_path, mbr->mbr_partition, _arg_name ) ) {
+		printf( "\n\t[ERROR] : Ya Existe una Particion con el nombre <<%s>>.", _arg_name );
 		free ( mbr );
 		return;
 	}
@@ -160,15 +141,19 @@ static inline void crear_primaria_extendida ( char _arg_path[], char _arg_name[]
 				printf("\n\t(Asignando la nueva particion.)");
 
 			POSICION_PARTICION ( mbr->mbr_partition[i] ) = posicion_inicial;
-			strcpy( NOMBRE_PARTICION ( mbr->mbr_partition[i] ), _arg_name );			
+			strcpy( NOMBRE_PARTICION ( mbr->mbr_partition[i] ), _arg_name );
 			TIPO_AJUSTE_PARTICION ( mbr->mbr_partition[i] ) = _arg_fit;
 			TAMANO_PARTICION ( mbr->mbr_partition[i] ) = _arg_size;
 			TIPO_PARTICION ( mbr->mbr_partition[i] ) = _arg_type;
 			ESTADO_PARTICION ( mbr->mbr_partition[i] ) = '1';
 
-			if ( _arg_type == 'E' ) {
+			if ( _arg_type == 'E' )
+			{
 				if(DEPURADOR)
-					printf("\n\t(Asignar el ebr.(PENDIENTE))");
+					printf("\n\t(Asignando el EBR de la Particion Extendida.)");
+				extend *ebr = nuevo_extend_boot_record ();
+				almacenar_registro_posicion_n ( _arg_path, ebr, sizeof( struct extend ), posicion_inicial );
+				free( ebr );
 			}
 
 			almacenar_registro_posicion_n ( _arg_path, mbr, sizeof( struct master ), 0 );
@@ -179,10 +164,89 @@ static inline void crear_primaria_extendida ( char _arg_path[], char _arg_name[]
 		posicion_inicial = POSICION_PARTICION( mbr->mbr_partition[i] ) + TAMANO_PARTICION( mbr->mbr_partition[i] );
 	}
 
-	if ( i == 4 ) {
-		printf("\n\tno exite espacio para la particion.");
+	printf( "\n\t[ERROR] : No Existe Suficiente Espacio para Asignar la Particion <<%s>>.", _arg_name );
+	free ( mbr );
+}
+
+static inline void crear_logica ( char _arg_path[], char _arg_name[], int _arg_size, char _arg_type, char _arg_fit )
+{
+	master *mbr = recuperar_registro( _arg_path, sizeof( struct master ), 0 );
+
+	if ( _arg_size >= TAMANO_DISCO_MBR( mbr ) ) {
+		printf( "\n\t[ERROR] : El Tamano de la Particion es Mayor al Tamano del Disco.");
+		free ( mbr );
+		return;
 	}
 
+	if ( _arg_size < (2 * KiB) ) {
+		printf( "\n\t[ERROR] : El Tamano Minimo de la Particion es de 2 KiB.");
+		free ( mbr );
+		return;
+	}
+
+	if ( !verificar_particion_extendida ( mbr->mbr_partition ) ) {
+		printf( "\n\t[ERROR] : No Existe una Particion Extentida Asignada." );
+		free ( mbr );
+		return;
+	}
+
+	int i = 0;
+	for (; i < 4; ++i)
+		if ( TIPO_PARTICION ( mbr->mbr_partition[i] ) == 'E' )
+			break;
+
+	int posicion = POSICION_PARTICION ( mbr->mbr_partition[i] );
+	while ( posicion != -1 ) {
+		extend *ebr = recuperar_registro ( _arg_path, sizeof( struct extend ), POSICION_PARTICION ( mbr->mbr_partition[i] ) );
+
+		if(DEPURADOR)
+			printf("\n\t(Posicion EBR: %d)", posicion);
+
+		if ( ESTADO_EBR( ebr ) != '0' ) {
+			posicion = SIGUIENTE_EBR( ebr );
+			free ( ebr );
+			continue;
+		}
+
+		int posicion_inicial = posicion + sizeof ( struct extend );
+		int posicion_limite = POSICION_PARTICION ( mbr->mbr_partition[i] ) + TAMANO_PARTICION( mbr->mbr_partition[i] );
+
+		if(DEPURADOR)
+			printf("\n\t(Posicion Inicial + Tamano + ebr: %d)", ( posicion_inicial + _arg_size +  (int)(sizeof ( struct extend )) ) );
+
+		if(DEPURADOR)
+			printf("\n\t(Posicion limite: %d)", posicion_limite);	
+
+		if ( ( posicion_inicial  + _arg_size + sizeof ( struct extend ) ) > posicion_limite ) {
+			free ( ebr );
+			break;
+		}
+
+		SIGUIENTE_EBR( ebr ) = posicion_inicial + _arg_size;
+		POSICION_EBR( ebr ) = posicion_inicial;
+		strcpy( NOMBRE_EBR( ebr ), _arg_name );
+		TAMANO_EBR( ebr ) = _arg_size;
+		AJUSTE_EBR( ebr ) = _arg_fit;
+		ESTADO_EBR( ebr ) = '1';
+
+		if(DEPURADOR)
+			printf( "\n\t(Posicion EBR Siguiente: %d)", SIGUIENTE_EBR( ebr ) );
+
+		extend *ebr_sig = nuevo_extend_boot_record ();
+		almacenar_registro_posicion_n ( _arg_path, ebr_sig, sizeof( struct extend ), SIGUIENTE_EBR( ebr ) );
+		free( ebr_sig );
+
+		almacenar_registro_posicion_n ( _arg_path, ebr, sizeof( struct extend ), posicion );
+		free ( ebr );
+
+			if(DEPURADOR)
+				printf("\n\t(Asignando la nueva particion logica.)");
+
+		free ( mbr );
+		return;
+	}
+
+	printf( "\n\t[ERROR] : No Existe Suficiente Espacio para Asignar la Particion <<%s>>.", _arg_name );
 	free ( mbr );
 }
 
@@ -218,7 +282,8 @@ static inline void eliminar_primaria_extendida ( char _arg_path[], char _arg_nam
 			return;
 		}
 
-		if ( TIPO_PARTICION ( mbr->mbr_partition[i] ) == 'E' ) {
+		if ( TIPO_PARTICION ( mbr->mbr_partition[i] ) == 'E' )
+		{
 			if( eliminar_logica ( _arg_path, _arg_name, 0, POSICION_PARTICION ( mbr->mbr_partition[i] ) ) ) {
 				free ( mbr );
 				return;
@@ -226,10 +291,7 @@ static inline void eliminar_primaria_extendida ( char _arg_path[], char _arg_nam
 		}
 	}
 
-	if ( i == 4 ) {
-		printf("\n\tno exite la particion a eliminar.");
-	}
-
+	printf( "\n\t[ERROR] : No Existe la Particion con el nombre <<%s>>.", _arg_name );
 	free ( mbr );
 }
 
@@ -254,18 +316,30 @@ static inline int eliminar_logica ( char _arg_path[], char _arg_name[], int _ind
 	// free ( ebr );
 }
 
-static inline void crear_logica ( char _arg_path[], char _arg_name[], int _arg_size, char _arg_type, char _arg_fit )
-{
-
-}
-
-
-static inline int verificar_nombre_particion ( particion _particion[], char _arg_name[] )
+static inline int verificar_nombre_particion ( char _arg_path[], particion _particion[], char _arg_name[] )
 {
 	int i = 0;
-	for ( ; i < 4; ++i )
+	for ( ; i < 4; ++i ) 
+	{
 		if ( strcmp ( NOMBRE_PARTICION( _particion[i] ), _arg_name ) == 0 )
 			return true;
+
+		if ( TIPO_PARTICION( _particion[i]) == 'E' )
+		{
+			int posicion = POSICION_PARTICION ( _particion[i] );
+			while ( posicion != -1 )
+			{
+				extend *ebr = recuperar_registro ( _arg_path, sizeof( struct extend ), POSICION_PARTICION ( _particion[i] ) );
+
+				if ( strcmp ( NOMBRE_EBR( ebr ), _arg_name ) == 0 ) {
+					free ( ebr );
+					return true;
+				}
+				posicion = SIGUIENTE_EBR( ebr );
+				free ( ebr );
+			}
+		}
+	}
 	return false;
 }
 

@@ -12,8 +12,10 @@
 #define false 0
 #define KiB 1024
 #define MiB 1024*KiB
-#define DEPURADOR true
+#define DEPURADOR false
+
 #define ERROR -1
+#define COMENTARIO -2
 
 /*
  *
@@ -47,9 +49,10 @@
 #include "parametro_200925270.h"
 #include "instruccion_200925270.h"
 
+#include "ebr_200925270.h"
 #include "particion_200925270.h"
 #include "mbr_200925270.h"
-#include "ebr_200925270.h"
+
 
 #include "manejador_particiones_200925270.h"
 #include "administrador_particiones_200925270.h"

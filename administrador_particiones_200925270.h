@@ -20,10 +20,11 @@ inline void validar_accion_particion ( parametro **_parametros, parametro **_err
 {
 	if(DEPURADOR)
 		printf("\n\t(Entrada Del Administrador de Particion)");
+	printf("\n\tValidando Parametros para la intruccion de Particion.");
 
 	parametro *errores = NULL;
 	if( cantidad_parametros ( (*_parametros) ) == 0 ) {
-		agregar_parametro ( &errores, ERROR, "Debe de ingresar al menos un parametro." );
+		agregar_parametro ( &errores, ERROR, "\n\t[ERROR] : Debe de ingresar al menos un parametro." );
 	}
 
 	/*
@@ -32,7 +33,7 @@ inline void validar_accion_particion ( parametro **_parametros, parametro **_err
 
 	char arg_path[128] = "";
 	if ( !buscar_parametro ( _parametros, PATH, arg_path ) ) {
-		agregar_parametro ( &errores, ERROR, "No existe el parametro <<path>>" );
+		agregar_parametro ( &errores, ERROR, "\n\t[ERROR] : No existe el parametro <<path>>" );
 	}
 
 	if(DEPURADOR)
@@ -44,7 +45,7 @@ inline void validar_accion_particion ( parametro **_parametros, parametro **_err
 
 	char arg_name[32] = "";
 	if ( !buscar_parametro ( _parametros, NAME, arg_name ) ) {
-		agregar_parametro ( &errores, ERROR, "No existe el parametro <<name>>" );
+		agregar_parametro ( &errores, ERROR, "\n\t[ERROR] : No existe el parametro <<name>>" );
 	}
 
 	if(DEPURADOR)
@@ -60,7 +61,7 @@ inline void validar_accion_particion ( parametro **_parametros, parametro **_err
 	{
 		(strcmp(arg_delete, "fast") == 0) ? arg_delete_ = 'R' :
 			(strcmp(arg_delete, "full") == 0) ? arg_delete_ = 'C' : 
-				agregar_parametro ( &errores, ERROR, "El valor del paramatro <<delete>>, debe ser <<fast>> o <<full>>." );
+				agregar_parametro ( &errores, ERROR, "\n\t[ERROR] : El valor del paramatro <<delete>>, debe ser <<fast>> o <<full>>." );
 
 		if(DEPURADOR)
 			printf("\n\t(Buscando parametro: DELETE)");
@@ -96,7 +97,7 @@ inline void validar_accion_particion ( parametro **_parametros, parametro **_err
 			case 'k': { arg_unit_ = KiB; } break;
 			case 'b': { arg_unit_ = 1; } break;
 			default: {
-				agregar_parametro ( &errores, ERROR, "El valor del paramatro <<unit>>, debe ser <<k>>, <<m>> o <<b>>." );
+				agregar_parametro ( &errores, ERROR, "\n\t[ERROR] : El valor del paramatro <<unit>>, debe ser <<k>>, <<m>> o <<b>>." );
 			} break;
 		}
 	}
@@ -113,7 +114,7 @@ inline void validar_accion_particion ( parametro **_parametros, parametro **_err
 	{
 		int valor_arg = 0;
 		if (! validar_convertir_decimal ( &valor_arg, arg_add ) ) {
-			agregar_parametro ( &errores, ERROR, "El valor del paramatro <<add>>, no es numerico." );
+			agregar_parametro ( &errores, ERROR, "\n\t[ERROR] : El valor del paramatro <<add>>, no es numerico." );
 		}
 
 		if(DEPURADOR)
@@ -142,7 +143,7 @@ inline void validar_accion_particion ( parametro **_parametros, parametro **_err
 
 	char arg_size[5] = "";
 	if ( !buscar_parametro ( _parametros, SIZE, arg_size ) ) {
-		agregar_parametro ( &errores, ERROR, "No existe el parametro <<size>>" );
+		agregar_parametro ( &errores, ERROR, "\n\t[ERROR] : No existe el parametro <<size>>" );
 	}
 
 	if(DEPURADOR)
@@ -150,25 +151,25 @@ inline void validar_accion_particion ( parametro **_parametros, parametro **_err
 
 	int valor_arg = 0;
 	if (! validar_convertir_decimal ( &valor_arg, arg_size ) ) {
-		agregar_parametro ( &errores, ERROR, "El valor del paramatro <<size>>, no es numerico." );
+		agregar_parametro ( &errores, ERROR, "\n\t[ERROR] : El valor del paramatro <<size>>, no es numerico." );
 	}
 
 	if( valor_arg <= 0) {
-		agregar_parametro ( &errores, ERROR, "El valor del paramatro <<size>>, debe ser mayor a cero." );
+		agregar_parametro ( &errores, ERROR, "\n\t[ERROR] : El valor del paramatro <<size>>, debe ser mayor a cero." );
 	}
 
 	/*
 	 *  ARGUMENTO FIT OPCIONAL
 	 */
 
-	char arg_fit_ = 'P';
+	char arg_fit_ = 'f';
 	char arg_fit[3] = "";	
 	if ( buscar_parametro ( _parametros, FIT, arg_fit ) )
 	{
 		(strcmp(arg_fit, "bf") == 0) ? arg_fit_ = 'b' :
 			(strcmp(arg_fit, "ff") == 0) ? arg_fit_ = 'f' :
 				(strcmp(arg_fit, "wf") == 0) ? arg_fit_ = 'w' :
-					agregar_parametro ( &errores, ERROR, "El valor del paramatro <<fit>>, debe ser <<bf>>, <<ff>> o <<wf>>." );
+					agregar_parametro ( &errores, ERROR, "\n\t[ERROR] : El valor del paramatro <<fit>>, debe ser <<bf>>, <<ff>> o <<wf>>." );
 	}
 
 	if(DEPURADOR)
@@ -187,7 +188,7 @@ inline void validar_accion_particion ( parametro **_parametros, parametro **_err
 			case 'e': { arg_type_ = 'E'; } break;
 			case 'l': { arg_type_ = 'L'; } break;
 			default: {
-				agregar_parametro ( &errores, ERROR, "El valor del paramatro <<type>>, debe ser <<p>>, <<e>> o <<l>>." );
+				agregar_parametro ( &errores, ERROR, "\n\t[ERROR] : El valor del paramatro <<type>>, debe ser <<p>>, <<e>> o <<l>>." );
 			} break;
 		}
 	}
@@ -207,8 +208,8 @@ inline void validar_accion_particion ( parametro **_parametros, parametro **_err
 	if(DEPURADOR)
 		printf("\n\t(Si cumple con todos los requisitos para crear una Particion)");
 
-	//verificar_creacion_particion ( arg_path, arg_name, valor_arg*arg_unit_, arg_type_, arg_fit_ );
 	verificar_creacion_particion ( arg_path, arg_name, valor_arg*arg_unit_, arg_type_, arg_fit_ );
+
 	if(DEPURADOR)
 		imprimir_mbr ( arg_path );
 }

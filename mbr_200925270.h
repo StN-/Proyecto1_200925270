@@ -31,6 +31,8 @@ typedef struct master master;
 inline void generar_master_boot_record ( char [], int );
 static inline master *nuevo_master_boot_record ( int );
 
+static inline int cantidad_ebr ( char [], int );
+
 /*
  *
  *
@@ -53,47 +55,48 @@ inline void imprimir_mbr ( char _arg_path[] )
 {
 	master *mbr = recuperar_registro( _arg_path, sizeof( struct master ), 0 );
 
-	printf("\n\t(Tamano: %d)", TAMANO_DISCO_MBR ( mbr ) );
-	printf("\n\t(Fecha: %s)", FECHA_CREACION_MBR ( mbr ) );
-	printf("\n\t(Numero Magico: %d)", NUMERO_MAGICO_MBR ( mbr ) );
+	printf( "\n" );
+	printf( "\n\t(MASTER BOOT RECORD)" );
+	printf( "\n\t(Tamano: %d)", TAMANO_DISCO_MBR ( mbr ) );
+	printf( "\n\t(Fecha: %s)", FECHA_CREACION_MBR ( mbr ) );
+	printf( "\n\t(Numero Magico: %d)", NUMERO_MAGICO_MBR ( mbr ) );
 
 	int i = 0;
 	for ( ; i < 4; ++i)
 	{
-		printf("\n\t (Localidad: %d)", i );
-		printf("\n\t (Posicion: %d)", POSICION_PARTICION ( PARTICION_MBR( mbr, i) ) );
-		printf("\n\t (Tipo Particion: %c)", TIPO_PARTICION ( PARTICION_MBR( mbr, i) ) );
-		printf("\n\t (Status Particion: %c)", ESTADO_PARTICION ( PARTICION_MBR( mbr, i) ) );
-		printf("\n\t (Tamano Particion: %d)", TAMANO_PARTICION ( PARTICION_MBR( mbr, i) ) );
-		printf("\n\t (Nombre Particion: %s)", NOMBRE_PARTICION ( PARTICION_MBR( mbr, i) ) );
-		printf("\n\t (Tipo Ajuste Particion: %c)", TIPO_AJUSTE_PARTICION ( PARTICION_MBR( mbr, i) ) );
-		printf("\n");
+		printf( "\n\t (Localidad: %d)", i );
+		printf( "\n\t (Posicion: %d)", POSICION_PARTICION ( PARTICION_MBR( mbr, i) ) );
+		printf( "\n\t (Tipo Particion: %c)", TIPO_PARTICION ( PARTICION_MBR( mbr, i) ) );
+		printf( "\n\t (Status Particion: %c)", ESTADO_PARTICION ( PARTICION_MBR( mbr, i) ) );
+		printf( "\n\t (Tamano Particion: %d)", TAMANO_PARTICION ( PARTICION_MBR( mbr, i) ) );
+		printf( "\n\t (Nombre Particion: %s)", NOMBRE_PARTICION ( PARTICION_MBR( mbr, i) ) );
+		printf( "\n\t (Tipo Ajuste Particion: %c)", TIPO_AJUSTE_PARTICION ( PARTICION_MBR( mbr, i) ) );
+		printf( "\n" );
 
 		if ( TIPO_PARTICION( PARTICION_MBR( mbr, i) ) == 'E' )
 		{
-			// int posicion_logica = POSICION_PARTICION( nparticion );
-			// extend *ebr = recuperar_registro( _arg_path, sizeof( struct extend ), posicion_logica );
-			// do {
+			int posicion = POSICION_PARTICION ( PARTICION_MBR( mbr, i) );
+			while ( posicion != -1 )
+			{
+				extend *ebr = recuperar_registro( _arg_path, sizeof( struct extend ), posicion );
 
-			// 	printf("       Ubicacion: %d\n", posicion_logica );
-			// 	printf("       Posicion de la particion en el disco: %d\n", POSICION_PARTICION ( ebr ) );
-			// 	printf("       Siguiente Particion: %d\n", SIGUIENTE_PARTICION ( ebr ) );
-			// 	printf("       Status Particion: %c\n", STATUS_PARTICION ( ebr ) );
-			// 	printf("       Tamano Particion: %d\n", TAMANO_PARTICION ( ebr ) );
-			// 	printf("       Nombre Particion: %s\n", NOMBRE_PARTICION ( ebr ) );
-			// 	printf("       Tipo Ajuste Particion: %c\n", TIPO_AJUSTE_PARTICION ( ebr ) );
+				printf( "\n\t (Tipo Ajuste Particion: %c)", AJUSTE_EBR( ebr ) );
+				printf( "\n\t (Nombre Particion: %s)", NOMBRE_EBR( ebr ) );
+				printf( "\n\t (Tamano Particion: %d)", TAMANO_EBR( ebr ) );				
+				printf( "\n\t (Status Particion: %c)", ESTADO_EBR( ebr ) );
+				printf( "\n\t (Posicion: %d)", SIGUIENTE_EBR( ebr ) );
+				printf( "\n\t (Posicion: %d)", POSICION_EBR( ebr ) );
 
-			// 	posicion_logica = SIGUIENTE_PARTICION ( ebr);
-			// 	free( ebr );
-			// 	ebr = ( posicion_logica == -1 ) ? NULL :
-			// 		recuperar_registro( _arg_path, sizeof( struct extend ), posicion_logica );
-			// } while ( ebr != NULL );
+				posicion = SIGUIENTE_EBR( ebr );
+				free( ebr );
+			}
 		}
 	}
+
 	free ( mbr );
 }
 
-inline void crear_reporte_mbr ( char _arg_path[], char _arg_file[] )
+inline void crear_reporte_mbr ( char _arg_path[] )
 {
 	FILE *archivoReporte = fopen ( "mbr.dot", "w" );
 
@@ -133,24 +136,24 @@ inline void crear_reporte_mbr ( char _arg_path[], char _arg_file[] )
 
 		if ( TIPO_PARTICION ( PARTICION_MBR( mbr, i) ) == 'E' )
 		{
-			// extend *ebr = recuperar_registro( _arg_path, sizeof( struct extend ), POSICION_PARTICION( nparticion ) );
-			// do {
+			int posicion = POSICION_PARTICION ( PARTICION_MBR( mbr, i) );
+			while ( posicion != -1 )
+			{
+				extend *ebr = recuperar_registro( _arg_path, sizeof( struct extend ), posicion );
 
-			// 	fprintf( archivoReporte, "\n\t\t\t<TR>" );
-			// 	fprintf( archivoReporte, "\n\t\t\t\t<TD COLSPAN=\"1\" BGCOLOR=\"lawngreen\">PARTICION LOGICA</TD>" );
-			// 	fprintf( archivoReporte, "\n\t\t\t</TR>" );
-			// 	fprintf( archivoReporte, "\n\t\t\t<TR><TD>NOMBRE_PARTICION <BR/> %s </TD></TR>", NOMBRE_PARTICION ( ebr ) );
-			// 	fprintf( archivoReporte, "\n\t\t\t<TR><TD>POSICION_PARTICION <BR/> %d Bytes</TD></TR>", POSICION_PARTICION ( ebr ) );
-			// 	fprintf( archivoReporte, "\n\t\t\t<TR><TD>SIGUIENTE_PARTICION <BR/> %d </TD></TR>", SIGUIENTE_PARTICION ( ebr ) );
-			// 	fprintf( archivoReporte, "\n\t\t\t<TR><TD>STATUS_PARTICION <BR/> %c </TD></TR>", STATUS_PARTICION ( ebr ) );
-			// 	fprintf( archivoReporte, "\n\t\t\t<TR><TD>TAMANO_PARTICION <BR/> %d </TD></TR>", TAMANO_PARTICION ( ebr ) );
-			// 	fprintf( archivoReporte, "\n\t\t\t<TR><TD>TIPO_AJUSTE_PARTICION <BR/> %c </TD></TR>", TIPO_AJUSTE_PARTICION ( ebr ) );
+				fprintf( archivoReporte, "\n\t\t\t<TR>" );
+				fprintf( archivoReporte, "\n\t\t\t\t<TD COLSPAN=\"1\" BGCOLOR=\"lawngreen\">PARTICION LOGICA</TD>" );
+				fprintf( archivoReporte, "\n\t\t\t</TR>" );
+				fprintf( archivoReporte, "\n\t\t\t<TR><TD>NOMBRE_PARTICION <BR/> %s </TD></TR>", NOMBRE_EBR( ebr ) );
+				fprintf( archivoReporte, "\n\t\t\t<TR><TD>POSICION_PARTICION <BR/> %d Bytes</TD></TR>", POSICION_EBR( ebr ) );
+				fprintf( archivoReporte, "\n\t\t\t<TR><TD>SIGUIENTE_PARTICION <BR/> %d </TD></TR>", SIGUIENTE_EBR( ebr ) );
+				fprintf( archivoReporte, "\n\t\t\t<TR><TD>STATUS_PARTICION <BR/> %c </TD></TR>", ESTADO_EBR( ebr ) );
+				fprintf( archivoReporte, "\n\t\t\t<TR><TD>TAMANO_PARTICION <BR/> %d </TD></TR>", TAMANO_EBR( ebr ) );
+				fprintf( archivoReporte, "\n\t\t\t<TR><TD>TIPO_AJUSTE_PARTICION <BR/> %c </TD></TR>", AJUSTE_EBR( ebr ) );
 
-			// 	int siguiente = SIGUIENTE_PARTICION ( ebr);
-			// 	free( ebr );
-			// 	ebr = ( siguiente == -1 ) ? NULL :
-			// 		recuperar_registro( _arg_path, sizeof( struct extend ), siguiente );
-			// } while ( ebr != NULL );
+				posicion = SIGUIENTE_EBR( ebr );
+				free( ebr );
+			}
 		}
 	}
 
@@ -163,58 +166,72 @@ inline void crear_reporte_mbr ( char _arg_path[], char _arg_file[] )
     fclose( archivoReporte );
 }
 
-inline void crear_reporte_disk ( char _arg_path[], char _arg_file[] )
+inline void crear_reporte_disk ( char _arg_path[] )
 {
-	// FILE *archivoReporte = fopen ( "disk.dot", "w" );
+	FILE *archivoReporte = fopen ( "disk.dot", "w" );
 
- //    fprintf( archivoReporte, "\ndigraph G" );
- //    fprintf( archivoReporte, "\n{" );
- //    fprintf( archivoReporte, "\n\tnode [shape=plaintext];" );
- //    fprintf( archivoReporte, "\n\tsplines=ortho;" );
+    fprintf( archivoReporte, "\ndigraph G" );
+    fprintf( archivoReporte, "\n{" );
+    fprintf( archivoReporte, "\n\tnode [shape=plaintext];" );
+    fprintf( archivoReporte, "\n\tsplines=ortho;" );
 
-	// int i = 0;
-	// master *mbr = recuperar_registro( _arg_path, sizeof( struct master ), 0 );
+	int i = 0;
+	master *mbr = recuperar_registro( _arg_path, sizeof( struct master ), 0 );
 
-	// fprintf( archivoReporte, "\n\tnodeA[label=<" );
-	// fprintf( archivoReporte, "\n\t\t<TABLE BORDER=\"0\" CELLBORDER=\"2\" CELLSPACING=\"10\" >" );
-	// fprintf( archivoReporte, "\n\t\t\t<TR>" );
-	// int tamano_mbr = sizeof( mbr ) + 4 * sizeof( struct particion );
+	fprintf( archivoReporte, "\n\tnodeA[label=<" );
+	fprintf( archivoReporte, "\n\t\t<TABLE BORDER=\"0\" CELLBORDER=\"2\" CELLSPACING=\"10\" >" );
+	fprintf( archivoReporte, "\n\t\t\t<TR>" );
 
-	// int cantidad_filas = 1 + cantidad_particiones_extendidas ( _arg_path, &mbr );
-	// fprintf( archivoReporte, "\n\t\t\t\t<TD ROWSPAN=\"%d\" BGCOLOR=\"cadetblue1\">MBR<BR/>%d Bytes</TD>", cantidad_filas, tamano_mbr );
+	fprintf( archivoReporte, "\n\t\t\t\t<TD ROWSPAN=\"%d\" BGCOLOR=\"cadetblue1\">MBR</TD>", 2 );
 
-	// int posicion_part_ext = 0;
-	// int cantidad_columnas_ebr = 0;
+	int posicion_ext = 0;
+	int cantidad_columnas_ebr = 0;
 	
-	// for ( ; i < 4; ++i) {
-	// 	particion *nparticion = recuperar_registro ( _arg_path, sizeof( struct particion ), PARTICION_MBR( mbr, i ) );
+	for ( ; i < 4; ++i)
+	{
+		if ( ESTADO_PARTICION ( PARTICION_MBR( mbr, i) ) == '0' )
+		{
+			fprintf( archivoReporte, "\n\t\t\t\t<TD ROWSPAN=\"%d\" BGCOLOR=\"cadetblue1\">Libre</TD>", 2 );
+		} else if ( ESTADO_PARTICION ( PARTICION_MBR( mbr, i) ) == 'P' ) {
+			fprintf( archivoReporte, "\n\t\t\t\t<TD ROWSPAN=\"%d\" BGCOLOR=\"cadetblue1\">Primaria<BR/>%d</TD>", 2,
+				TAMANO_PARTICION ( PARTICION_MBR( mbr, i) ) );
+		} else {
+			posicion_ext = POSICION_PARTICION ( PARTICION_MBR( mbr, i) );
+			int ebrs = cantidad_ebr ( _arg_path, POSICION_PARTICION ( PARTICION_MBR( mbr, i) ) );
+			fprintf( archivoReporte, "\n\t\t\t\t<TD COLSPAN=\"%d\" BGCOLOR=\"cadetblue1\">Extendida<BR/>%d Bytes</TD>", ebrs,
+				TAMANO_PARTICION ( PARTICION_MBR( mbr, i) ) );
+		}
+	}
 
-	// 	if ( TIPO_PARTICION ( nparticion ) == '0' ) {
-	// 		fprintf( archivoReporte, "\n\t\t\t\t<TD ROWSPAN=\"%d\" BGCOLOR=\"cadetblue1\">%s<BR/>%d Bytes</TD>", cantidad_filas,
-	// 				NOMBRE_PARTICION ( nparticion ), TAMANO_PARTICION ( nparticion ) );
-	// 	} else {
-	// 		if ( TIPO_PARTICION( nparticion ) == 'E' ) {
-	// 			posicion_part_ext = POSICION_PARTICION ( nparticion );
-	// 			cantidad_columnas_ebr = cantidad_particiones_logicas ( _arg_path, POSICION_PARTICION ( nparticion ), TAMANO_PARTICION ( nparticion ) );
-	// 			fprintf( archivoReporte, "\n\t\t\t\t<TD COLSPAN=\"%d\" BGCOLOR=\"cadetblue1\">%s<BR/>%d Bytes</TD>", cantidad_columnas_ebr,
-	// 				NOMBRE_PARTICION ( nparticion ), TAMANO_PARTICION ( nparticion ) );
-	// 		} else {
-	// 			fprintf( archivoReporte, "\n\t\t\t\t<TD ROWSPAN=\"%d\" BGCOLOR=\"cadetblue1\">%s<BR/>%d Bytes</TD>", cantidad_filas,
-	// 				NOMBRE_PARTICION ( nparticion ), TAMANO_PARTICION ( nparticion ) );
-	// 		}
-	// 	}
+	fprintf( archivoReporte, "\n\t\t\t</TR>" );
 
-	// 	free ( nparticion );
-	// }
+	if (posicion_ext != 0)
+	{
+		fprintf( archivoReporte, "\n\t\t\t<TR>" );
 
-	// fprintf( archivoReporte, "\n\t\t\t</TR>" );
-	// fprintf( archivoReporte, "\n\t\t</TABLE>>" );
-	// fprintf( archivoReporte, "\n\t];" );
+		while ( posicion_ext != -1 )
+		{
+			extend *ebr = recuperar_registro( _arg_path, sizeof( struct extend ), posicion_ext );
+			fprintf( archivoReporte, "\n\t\t\t\t<TD>EBR</TD>" );
+			if ( ESTADO_EBR ( ebr ) == '0' )
+				fprintf( archivoReporte, "\n\t\t\t\t<TD>Libre</TD>" );
+			else
+				fprintf( archivoReporte, "\n\t\t\t\t<TD>Logica<BR/>%d Bytes</TD>", TAMANO_EBR ( ebr ) );
 
-	// free (mbr);
+			posicion_ext = SIGUIENTE_EBR( ebr );
+			free( ebr );
+		}
 
- //    fprintf( archivoReporte, "\n}" );
- //    fclose( archivoReporte );
+		fprintf( archivoReporte, "\n\t\t\t</TR>" );
+	}
+
+	fprintf( archivoReporte, "\n\t\t</TABLE>>" );
+	fprintf( archivoReporte, "\n\t];" );
+
+	free (mbr);
+
+    fprintf( archivoReporte, "\n}" );
+    fclose( archivoReporte );
 }
 
 	// 	nodeA[label=<
@@ -233,6 +250,19 @@ inline void crear_reporte_disk ( char _arg_path[], char _arg_file[] )
 	// 				<TD>LOGICA 2</TD>
 	// 			</TR>
 	// 		</TABLE>>
+
+static inline int cantidad_ebr ( char _arg_path[], int _posicion_inicial )
+{
+	int total = 0;
+	while ( _posicion_inicial != -1 )
+	{
+		extend *ebr = recuperar_registro( _arg_path, sizeof( struct extend ), _posicion_inicial );
+		total += 2;
+		_posicion_inicial = SIGUIENTE_EBR( ebr );
+		free( ebr );
+	}
+	return total;
+}
 
 static inline master *nuevo_master_boot_record ( int _tamano )
 {

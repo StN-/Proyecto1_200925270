@@ -9,10 +9,11 @@
  */
 
 // inline int validar_directorio ( char [] );
-// inline int validar_archivo ( char [] );
+
 
 void concatenar ( char *, int _cantidad, ... );
-inline void tiempo_actual( char *, int );
+void tiempo_actual( char *, int );
+int existe_archivo ( char [] );
 
 // void imprimir_v1 ( const char *, ... );
 // void imprimir_v2 ( int, ... );
@@ -23,7 +24,7 @@ int leer_entrada_formato_decimal ( const char *, int );
 int validar_convertir_decimal ( int *, char [] );
 void convertir_minusculas ( char *, char [] );
 
-inline void reemplazar ( char *, char [], char [], int );
+void reemplazar ( char *, char [], char [], int );
 
 /*
  *
@@ -62,7 +63,7 @@ void concatenar ( char *_buffer, int _cantidad, ... ) {
 	va_end(vl);
 }
 
-inline void reemplazar ( char *_buffer, char _sub_cadena[], char _contenido[], int _espacio ) {
+void reemplazar ( char *_buffer, char _sub_cadena[], char _contenido[], int _espacio ) {
 	char *buffer = strstr( _buffer, _sub_cadena );
 	strncpy ( buffer, _contenido, _espacio );
 }
@@ -72,11 +73,11 @@ inline void reemplazar ( char *_buffer, char _sub_cadena[], char _contenido[], i
 // 	return (stat ( _ruta, &st )==-1)?0:1;
 // }
 
-// inline int validar_archivo ( char _ruta[] ) {
-// 	return (access( _ruta, F_OK )==-1)?0:1;
-// }
+int existe_archivo ( char _ruta[] ) {
+	return ( access ( _ruta, F_OK ) == -1 ) ? false : true;
+}
 
-inline void tiempo_actual( char *_fecha, int _tamano )
+void tiempo_actual( char *_fecha, int _tamano )
 {
     time_t ahorita;
     time( &ahorita );

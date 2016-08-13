@@ -74,7 +74,7 @@ int buscar_parametro ( parametro **_lista, int _tipo, char *_buffer ) {
 
 inline void imprimir_parametros ( parametro *_lista )
 {
-	printf("\n\t(Parametros:)");
+	//printf("\n\t(Parametros:)");
 	if ( _lista == NULL ) {
 		printf("\n\t  (Lista Vacia)");
 		return;

@@ -25,13 +25,19 @@ inline void analizar_entrada ( char _entrada[], accion **_instruccion )
 {
 	if(DEPURADOR)
 		printf("\n\t(Entrada Del Analizador: %s)", _entrada);
+	printf("\n\tAnalizando Cadena de Entrada.");
 
 	int longitud = strlen ( _entrada );
 	(*_instruccion) = parsear_cadena_entrada ( _entrada, longitud );
 	//accion *instruccion = parsear_cadena_entrada ( _entrada, longitud );
 	if(DEPURADOR)
+		printf("\n\t(Salida Del Analizador)");
+
+	if ( (*_instruccion) == NULL )
+		return;
+
+	if(DEPURADOR)
 		imprimir_instrucciones ( *_instruccion );
-	// imprimir salida del analizador...
 }
 
 static inline accion *parsear_cadena_entrada ( char _entrada[], int _longitud )
@@ -55,6 +61,7 @@ static inline accion *parsear_cadena_entrada ( char _entrada[], int _longitud )
 					case '#': {
 						estado = 1;
 						//generar accion como comentario
+						instruccion = nueva_accion( COMENTARIO );
 					} break;
 					default: {
 						strncat( buffer, &_entrada[i], 1 );
@@ -162,20 +169,29 @@ static inline accion *parsear_cadena_entrada ( char _entrada[], int _longitud )
 		}
 	}
 
-	if (instruccion == NULL) {
-		if(DEPURADOR)
-			printf("\n\t(Accion: %s)", buffer);
-		instruccion =  nueva_accion( validar_instruccion ( buffer ) );
-	} else {
-		if(DEPURADOR)
-			printf("\n\t(Parametro: %s)", buffer);
-		insertar_parametro ( &parametros, validar_formato_parametro ( buffer ) );
+
+	if ( strcmp ( buffer, "" ) != 0 ) 
+	{
+		if (instruccion == NULL) {
+			if(DEPURADOR)
+				printf("\n\t(Accion: %s)", buffer);
+			instruccion =  nueva_accion( validar_instruccion ( buffer ) );
+		} else {
+			if(DEPURADOR)
+				printf("\n\t(Parametro: %s)", buffer);
+			insertar_parametro ( &parametros, validar_formato_parametro ( buffer ) );
+		}
 	}
 
 	strcpy( buffer, "" );
 
 	if (instruccion == NULL && parametros != NULL) {
 		printf("\n\t Error: La entrada no concuerda con la sintaxis.");
+		return NULL;
+	}
+
+	if (instruccion == NULL && parametros == NULL) {
+		return NULL;
 	}
 
 	instruccion->parametros = parametros;

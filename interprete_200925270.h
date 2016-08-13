@@ -28,12 +28,13 @@ inline int ejecutar_instrucciones ( accion **_instrucciones )
 
 	if(DEPURADOR)
 		printf("\n\t(Entrada Del Interprete)");
+	printf("\n\tValidando Instruccion a Ejecutar.");
 
 	parametro *errores = NULL;
 	switch (instrucciones->tipo)
 	{
 		case MKDISK: { 
-			//mKdisk -path::"/home/wxqzsvtyk/Plantillas/disk.dk" -size::2 +unit::M
+			//mKdisk -path::"/home/wxqzsvtyk/Plantillas/disk.dk" -size::6 +unit::M
 			validar_creacion_disco ( &(*_instrucciones)->parametros, &errores );
 		} break;
 		case RMDISK: { 
@@ -41,23 +42,27 @@ inline int ejecutar_instrucciones ( accion **_instrucciones )
 			validar_eliminacion_disco ( &(*_instrucciones)->parametros, &errores );
 		} break;
 		case FDISK: { 
-			// fdisk –Size::256 –path::"/home/wxqzsvtyk/Plantillas/disk.dk" –name::"Particion2" +unit::k
-			// fdisk –delete::fast –path::"/home/wxqzsvtyk/Plantillas/disk.dk" –name::"Particion2"
+			// fdisk –Size::512 –path::"/home/wxqzsvtyk/Plantillas/disk.dk" –name::"Particion5" +unit::w +type::l
+			// fdisk –delete::fast –path::"/home/wxqzsvtyk/Plantillas/disk.dk" –name::"Particion3" 
 			validar_accion_particion ( &(*_instrucciones)->parametros, &errores );
 		} break;
 		case MOUNT: {
-			// mount –path::"/home/wxqzsvtyk/Plantillas/disk.dk" –name::"Particion1"
-			// mount –path::"/home/wxqzsvtyk/Plantillas/disk.dk" –name::"Particion2"
+			// mount -y::z –path::"/home/wxqzsvtyk/Plantillas/disk.dk" –name::"Particion1"
+			// mount –path::"/home/wxqzsvtyk/Plantillas/disk.dk" –name::"Particion7"
 			validar_montar_disco ( &(*_instrucciones)->parametros, &errores );
 		} break;
 		// case UNMOUNT: {} break;
 		case REP: {
 			// rep -id::vda1 –path::"/home/wxqzsvtyk/Plantillas/mbr" -name::mbr
+			// rep -id::vda1 –path::"/home/wxqzsvtyk/Plantillas/mbr.png" -name::disk
 			validar_creacion_reportes ( &(*_instrucciones)->parametros, &errores );
 		} break;
 		case EXEC: {
 			// exec -path::"/home/wxqzsvtyk/Plantillas/ArchivoScript.txt"
 			validar_ejecucion_archivo ( &(*_instrucciones)->parametros, &errores );
+		} break;
+		case COMENTARIO: {
+			return true;
 		} break;
 		case EXIT: {
 			return false;
@@ -67,11 +72,12 @@ inline int ejecutar_instrucciones ( accion **_instrucciones )
 		default: {} break;
 	}
 
-	//mostrar errores
+	printf("\n\t(ERRORES ENCONTRADOS:)");
+	imprimir_parametros ( errores );
+	printf("\n");
+	printf("\n\t(PARAMETROS DEMAS:)");
+	imprimir_parametros ( instrucciones->parametros );
 
-	// accion *siguiente = obtener_siguiente_instruccion ( _instrucciones );
-	// int resultado = ejecutar_instrucciones ( &siguiente );
-	// free ( siguiente );
 	return true;
 }
 
@@ -147,7 +153,7 @@ static inline void ejecutar_archivo_entrada ( FILE **_archivo )
 
 	while ( fgets ( buffer, sizeof(buffer), *_archivo ) )
 	{
-		accion *lista;
+		accion *lista = NULL;
 
 		longitud = strlen( cadena );
 		if ( validar_final_linea ( buffer ) )

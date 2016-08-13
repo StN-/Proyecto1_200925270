@@ -72,12 +72,14 @@ static inline accion *pop_instruccion ( accion **_lista ) {
 }
 
 inline void imprimir_instrucciones ( accion *_lista ) {
+	printf("\n");
 	printf("\n\t(Instrucciones:)");
 	if ( _lista == NULL ) {
 		printf("\n\t  (Lista Vacia)");
 		return;
 	}
 	imprimir_lista_instrucciones ( _lista );
+	printf("\n");
 }
 
 static inline void imprimir_lista_instrucciones ( accion *_lista ) {

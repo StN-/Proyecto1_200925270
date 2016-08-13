@@ -116,6 +116,7 @@ static inline int buscar_id_partition ( partition *_partitionen, char _id[], cha
 
 
 inline void imprimir_particiones_montadas ( festplatte *_festplatten ) {
+	printf("\n");
 	printf("\n\t(Discos Montados:)");
 	if ( _festplatten == NULL ) {
 		printf("\n\t  (Lista Vacia)");

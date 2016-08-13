@@ -20,19 +20,14 @@ extern festplatte *festplatten;
 
 inline void verificar_creacion_disco_virtual ( char _arg_path[], int _arg_size, int _tipo )
 {
-	// char arg_path[128] = "";
-	// strcpy ( arg_path, _arg_path );
+	if(DEPURADOR)
+		printf("\n\t(Entrada Del Manejador de Disco)");
+	printf("\n\tValidando Datos para la creacion de Disco.");
 
-	//char *sub_string = strrchr ( arg_path_dir, '/' );
-
-	// if ( !validar_directorio ( arg_path_dir ) ) {
-	// 	int status = mkdir( arg_path_dir, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH );
-	// }
-
-	// if ( validar_archivo ( _arg_path ) ) {
-	// 	printf( "   -Error : El archivo <<%s>> Ya exite.\n", _arg_path );
-	// 	return;
-	// }
+	if ( existe_archivo ( _arg_path ) ) {
+		printf( "\n\t[ERROR] : El archivo <<%s>> Ya exite.", _arg_path );
+		return;
+	}
 
 	creacion_disco_virtual ( _arg_path, (_arg_size * _tipo) );
 	generar_master_boot_record ( _arg_path, (_arg_size * _tipo) );
@@ -42,50 +37,39 @@ inline void verificar_creacion_disco_virtual ( char _arg_path[], int _arg_size, 
 
 inline void verificar_eliminacion_disco_virtual ( char _arg_path[] )
 {
-	// char arg_path_dir[128] = "";
-	// strcpy ( arg_path_dir, _arg_path );
-	
-	// char *sub_string = strrchr ( arg_path_dir, '/' );
+	if(DEPURADOR)
+		printf("\n\t(Entrada Del Manejador de Disco)");
+	printf("\n\tValidando Datos para la eliminacion de Disco.");
 
-	// if ( !validar_directorio ( arg_path_dir ) ) {
-	// 	printf( "   -Error : El direcotrio <<%s>> No exite.\n", arg_path_dir );
-	// 	return;
-	// }
-
-	// if ( !validar_archivo ( _arg_path ) ) {
-	// 	printf( "   -Error : El archivo <<%s>> No exite.\n", _arg_path );
-	// 	return;
-	// }
+	if ( !existe_archivo ( _arg_path ) ) {
+		printf( "\n\t[ERROR] : El archivo <<%s>> No exite.", _arg_path );
+		return;
+	}
 
 	eliminacion_disco_virtual ( _arg_path );
 }
 
 inline void verificar_montar_disco ( char _arg_path[], char _arg_name[] )
 {
-	// char arg_path_dir[128] = "";
-	// strcpy ( arg_path_dir, _arg_path );
-	// char *sub_string = strrchr ( arg_path_dir, '/' );
-	// reemplazar ( arg_path_dir, sub_string, "", strlen(sub_string) );
-	// if ( !validar_directorio ( arg_path_dir ) ) {
-	// 	printf( "   -Error : El direcotrio <<%s>> No exite.\n", arg_path_dir );
-	// 	return;
-	// }
+	if(DEPURADOR)
+		printf("\n\t(Entrada Del Manejador de Disco)");
+	printf("\n\tValidando Datos para montar particion.");
 
-	// if ( !validar_archivo ( _arg_path ) ) {
-	// 	printf( "   -Error : El archivo <<%s>> No exite.\n", _arg_path );
-	// 	return;
-	// }
+	if ( !existe_archivo ( _arg_path ) ) {
+		printf( "\n\t[ERROR] : El archivo <<%s>> No exite.", _arg_path );
+		return;
+	}
+
 	master *mbr = recuperar_registro( _arg_path, sizeof( struct master ), 0 );
 
-	if ( !verificar_nombre_particion ( mbr->mbr_partition, _arg_name ) ) {
-		printf("\n\tNo exite la particion con ese nombre.");
+	if ( !verificar_nombre_particion ( _arg_path, mbr->mbr_partition, _arg_name ) ) {
+		printf( "\n\t[ERROR] : No existe la particion con el nombre <<%s>>.", _arg_name );
 		free ( mbr );
 		return;
 	}
 
 	free ( mbr );
 
-	//montar ( &lista_discos, _arg_path, _arg_name );
 	montar_particion ( &festplatten, _arg_path, _arg_name );
 
 	if(DEPURADOR)
