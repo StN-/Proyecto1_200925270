@@ -31,7 +31,7 @@ typedef enum TIPO_ACCION TIPO_ACCION;
 
 void agregar_accion ( accion **, int );
 void agregar_instruccion ( accion **, int, parametro ** );
-static inline void insertar_instruccion ( accion **, accion * );
+inline void insertar_instruccion ( accion **, accion * );
 
 inline accion *obtener_siguiente_instruccion ( accion ** );
 static inline accion *pop_instruccion ( accion ** );
@@ -57,7 +57,7 @@ void agregar_accion ( accion **_lista, int _tipo ) {
 	insertar_instruccion ( _lista, nueva_accion ( _tipo ) );
 }
 
-static inline void insertar_instruccion ( accion **_lista, accion *_instruccion ) {
+inline void insertar_instruccion ( accion **_lista, accion *_instruccion ) {
 	( (*_lista) == NULL ) ? (*_lista) = _instruccion : insertar_instruccion ( &(*_lista)->siguiente, _instruccion );
 }
 

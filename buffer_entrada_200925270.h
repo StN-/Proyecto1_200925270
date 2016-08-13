@@ -10,10 +10,6 @@
 
 inline int leer_entrada_consola ( char * );
 static inline int validar_final_linea ( char [] );
-static inline void analizar_entrada_archivo ( char [], char [] );
-
-
-inline int leer_archivo_entrada ( int, char *, char [] );
 
 /*
  *
@@ -44,40 +40,6 @@ inline int leer_entrada_consola ( char *_cadena )
 	return true;
 }
 
-inline int leer_archivo_entrada ( FILE **_archivo )
-{
-	int numero_linea = 0;
-	char buffer[128] = "";
-	char cadena[256] = ""
-	
-	accion *instrucciones = NULL;
-
-	while ( fgets ( buffer, sizeof(buffer), *_archivo ) ) }
-	{
-		//printf("  Linea No: %d :", numero_linea );
-		//parsear_entrada ( buffer, strlen(buffer) );
-		//++numero_linea;
-		//printf("\n");
-
-		if ( !validar_final_linea ( buffer ) ) {
-			strcpy ( cadena, "" );
-		}
-
-		
-
-		char cadena[256];
-		accion *lista = NULL;
-		if( !leer_entrada_consola ( cadena ) ) {
-			printf("\n\t Error: La cadena es demasiado grande para procesar.");
-			continue;
-		}
-
-		analizar_entrada ( cadena, &lista );
-		opcion = 
-
-	}
-}
-
 inline int validar_final_linea ( char _cadena[] )
 {
 	int longitud = strlen ( _cadena );
@@ -89,7 +51,7 @@ inline int validar_final_linea ( char _cadena[] )
 			case '\n': case ' ': {
 				--longitud;
 			} break;
-			case '/': {
+			case '\\': {
 				_cadena[longitud] = ' ';
 				return true;
 			} default: {

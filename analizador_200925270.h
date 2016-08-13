@@ -198,7 +198,7 @@ static inline int validar_instruccion ( char _instruccion[] )
 	else if ( strcmp( _instruccion, "mkfs" ) == 0 )
 		return 0;
 	else if ( strcmp( _instruccion, "exec" ) == 0 )
-		return 0;
+		return EXEC;
 	else if ( strcmp( _instruccion, "exit" ) == 0 )
 		return EXIT;
 	else if ( strcmp( _instruccion, "mkgrp" ) == 0 )

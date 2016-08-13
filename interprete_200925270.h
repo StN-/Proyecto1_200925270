@@ -32,10 +32,12 @@ inline int ejecutar_instrucciones ( accion **_instrucciones )
 	parametro *errores = NULL;
 	switch (instrucciones->tipo)
 	{
-		case MKDISK: { //mKdisk -path::"/home/wxqzsvtyk/Plantillas/disk.dk" -size::2 +unit::M
+		case MKDISK: { 
+			//mKdisk -path::"/home/wxqzsvtyk/Plantillas/disk.dk" -size::2 +unit::M
 			validar_creacion_disco ( &(*_instrucciones)->parametros, &errores );
 		} break;
-		case RMDISK: { //RmDisk -path::"/home/wxqzsvtyk/Plantillas/disk.dk"
+		case RMDISK: { 
+			// RmDisk -path::"/home/wxqzsvtyk/Plantillas/disk.dk"
 			validar_eliminacion_disco ( &(*_instrucciones)->parametros, &errores );
 		} break;
 		case FDISK: { 
@@ -54,7 +56,8 @@ inline int ejecutar_instrucciones ( accion **_instrucciones )
 			validar_creacion_reportes ( &(*_instrucciones)->parametros, &errores );
 		} break;
 		case EXEC: {
-
+			// exec -path::"/home/wxqzsvtyk/Plantillas/ArchivoScript.txt"
+			validar_ejecucion_archivo ( &(*_instrucciones)->parametros, &errores );
 		} break;
 		case EXIT: {
 			return false;
@@ -64,10 +67,12 @@ inline int ejecutar_instrucciones ( accion **_instrucciones )
 		default: {} break;
 	}
 
-	accion *siguiente = obtener_siguiente_instruccion ( _instrucciones );
-	int resultado = ejecutar_instrucciones ( &siguiente );
-	free ( siguiente );
-	return resultado;
+	//mostrar errores
+
+	// accion *siguiente = obtener_siguiente_instruccion ( _instrucciones );
+	// int resultado = ejecutar_instrucciones ( &siguiente );
+	// free ( siguiente );
+	return true;
 }
 
 inline void validar_ejecucion_archivo ( parametro **_parametros, parametro **_errores )
@@ -135,37 +140,42 @@ static inline void ejecutar_archivo_entrada ( FILE **_archivo )
 {
 	int numero_linea = 0;
 	char buffer[128] = "";
-	char cadena[256] = ""
-	
-	accion *instrucciones = NULL;
+	char cadena[256] = "";
 
-	while ( fgets ( buffer, sizeof(buffer), *_archivo ) ) }
+	int longitud = 0;	
+	//accion *instrucciones = NULL;
+
+	while ( fgets ( buffer, sizeof(buffer), *_archivo ) )
 	{
-		//printf("  Linea No: %d :", numero_linea );
-		//parsear_entrada ( buffer, strlen(buffer) );
-		//++numero_linea;
-		//printf("\n");
+		accion *lista;
 
-		if ( !validar_final_linea ( buffer ) ) {
-			strcpy ( cadena, "" );
-		}
-
-		
-
-		char cadena[256];
-		accion *lista = NULL;
-		if( !leer_entrada_consola ( cadena ) ) {
-			printf("\n\t Error: La cadena es demasiado grande para procesar.");
+		longitud = strlen( cadena );
+		if ( validar_final_linea ( buffer ) )
+		{
+			longitud += strlen ( buffer ) + 1;
+			if( longitud < 255 ) {
+				concatenar ( cadena, 1, buffer );
+			} else {
+				printf("\n\t Error: La cadena es demasiado grande para procesar.");
+			}			
 			continue;
+		} else {
+			longitud += strlen ( buffer ) + 1;
+			if( longitud < 255 ) {
+				concatenar ( cadena, 1, buffer );
+			} else {
+				printf("\n\t Error: La cadena es demasiado grande para procesar.");
+				continue;
+			}
 		}
 
 		analizar_entrada ( cadena, &lista );
-		opcion = 
-
+		//insertar_instruccion ( &instrucciones, lista );
+		ejecutar_instrucciones ( &lista );
+		strcpy ( cadena, "" );
 	}
 
-	ejecutar_instrucciones ( &lista );
-
+	
 	printf(" Finalizando Ejecucion del Archivo Script.\n");
 }
 
