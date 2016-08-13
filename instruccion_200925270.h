@@ -13,9 +13,11 @@ typedef struct accion accion;
 enum TIPO_ACCION {
 	MKDISK = 0,
 	RMDISK,
+	EXEC,
 	FDISK,
 	MOUNT,
 	UNMOUNT,
+	REP,
 	EXIT
 };
 

@@ -35,6 +35,9 @@ inline void validar_accion_particion ( parametro **_parametros, parametro **_err
 		agregar_parametro ( &errores, ERROR, "No existe el parametro <<path>>" );
 	}
 
+	if(DEPURADOR)
+		printf("\n\t(Buscando parametro: PATH)");
+
 	/*
 	 *  ARGUMENTO NAME OBLIGATORIO
 	 */
@@ -44,6 +47,9 @@ inline void validar_accion_particion ( parametro **_parametros, parametro **_err
 		agregar_parametro ( &errores, ERROR, "No existe el parametro <<name>>" );
 	}
 
+	if(DEPURADOR)
+		printf("\n\t(Buscando parametro: NAME)");
+
 	/*
 	 *  ARGUMENTO DELETE OPCIONAL
 	 */
@@ -52,9 +58,12 @@ inline void validar_accion_particion ( parametro **_parametros, parametro **_err
 	char arg_delete[8] = "";
 	if ( buscar_parametro ( _parametros, DELETE, arg_delete ) ) 
 	{
-		(strcmp(arg_delete, "fast") == 0) ? arg_delete_ = 'F' :
+		(strcmp(arg_delete, "fast") == 0) ? arg_delete_ = 'R' :
 			(strcmp(arg_delete, "full") == 0) ? arg_delete_ = 'C' : 
 				agregar_parametro ( &errores, ERROR, "El valor del paramatro <<delete>>, debe ser <<fast>> o <<full>>." );
+
+		if(DEPURADOR)
+			printf("\n\t(Buscando parametro: DELETE)");
 
 		if( cantidad_parametros ( errores ) > 0 ) {
 			(*_errores) = errores;
@@ -67,7 +76,10 @@ inline void validar_accion_particion ( parametro **_parametros, parametro **_err
 
 		if(DEPURADOR)
 			printf("\n\t(Si cumple con todos los requisitos para eliminar una Particion)");
-		//verificar_eliminacion_particion ( arg_path, arg_name, arg_delete_ );
+
+		verificar_eliminacion_particion ( arg_path, arg_name, arg_delete_ );
+		if(DEPURADOR)
+			imprimir_mbr ( arg_path );
 		return;
 	}
 
@@ -89,6 +101,9 @@ inline void validar_accion_particion ( parametro **_parametros, parametro **_err
 		}
 	}
 
+	if(DEPURADOR)
+		printf("\n\t(Buscando parametro: UNIT)");
+
 	/*
 	 *  ARGUMENTO ADD OPCIONAL
 	 */
@@ -96,7 +111,13 @@ inline void validar_accion_particion ( parametro **_parametros, parametro **_err
 	char arg_add[8] = "";
 	if ( buscar_parametro ( _parametros, ADD, arg_add ) )
 	{
-		// VALIDAR EL FORMATO NUMERICO.................
+		int valor_arg = 0;
+		if (! validar_convertir_decimal ( &valor_arg, arg_add ) ) {
+			agregar_parametro ( &errores, ERROR, "El valor del paramatro <<add>>, no es numerico." );
+		}
+
+		if(DEPURADOR)
+			printf("\n\t(Buscando parametro: ADD)");
 
 		if( cantidad_parametros ( errores ) > 0 ) {
 			(*_errores) = errores;
@@ -107,10 +128,11 @@ inline void validar_accion_particion ( parametro **_parametros, parametro **_err
 			return;
 		}
 
-
 		if(DEPURADOR)
 			printf("\n\t(Si cumple con todos los requisitos para modificar una Particion)");
 		// llamar al controlador del particiones...
+		if(DEPURADOR)
+			imprimir_mbr ( arg_path );
 		return;
 	}
 
@@ -123,10 +145,13 @@ inline void validar_accion_particion ( parametro **_parametros, parametro **_err
 		agregar_parametro ( &errores, ERROR, "No existe el parametro <<size>>" );
 	}
 
+	if(DEPURADOR)
+		printf("\n\t(Buscando parametro: SIZE)");
+
 	int valor_arg = 0;
-	// if (! validar_formato_numerico ( &valor_arg, arg_size ) ) {
-	// 	agregar_parametro ( &errores, ERROR, "El valor del paramatro <<size>>, no es numerico." );
-	// }
+	if (! validar_convertir_decimal ( &valor_arg, arg_size ) ) {
+		agregar_parametro ( &errores, ERROR, "El valor del paramatro <<size>>, no es numerico." );
+	}
 
 	if( valor_arg <= 0) {
 		agregar_parametro ( &errores, ERROR, "El valor del paramatro <<size>>, debe ser mayor a cero." );
@@ -140,11 +165,14 @@ inline void validar_accion_particion ( parametro **_parametros, parametro **_err
 	char arg_fit[3] = "";	
 	if ( buscar_parametro ( _parametros, FIT, arg_fit ) )
 	{
-		(strcmp(arg_fit, "bf") == 0) ? arg_fit_ = 'M' :
-			(strcmp(arg_fit, "ff") == 0) ? arg_fit_ = '1' :
-				(strcmp(arg_fit, "wf") == 0) ? arg_fit_ = 'P' :
+		(strcmp(arg_fit, "bf") == 0) ? arg_fit_ = 'b' :
+			(strcmp(arg_fit, "ff") == 0) ? arg_fit_ = 'f' :
+				(strcmp(arg_fit, "wf") == 0) ? arg_fit_ = 'w' :
 					agregar_parametro ( &errores, ERROR, "El valor del paramatro <<fit>>, debe ser <<bf>>, <<ff>> o <<wf>>." );
 	}
+
+	if(DEPURADOR)
+		printf("\n\t(Buscando parametro: FIT)");
 
 	/*
 	 *  ARGUMENTO TYPE OPCIONAL
@@ -164,6 +192,9 @@ inline void validar_accion_particion ( parametro **_parametros, parametro **_err
 		}
 	}
 
+	if(DEPURADOR)
+		printf("\n\t(Buscando parametro: TYPE)");
+
 	if( cantidad_parametros ( errores ) > 0 ) {
 		(*_errores) = errores;
 		return;
@@ -177,6 +208,9 @@ inline void validar_accion_particion ( parametro **_parametros, parametro **_err
 		printf("\n\t(Si cumple con todos los requisitos para crear una Particion)");
 
 	//verificar_creacion_particion ( arg_path, arg_name, valor_arg*arg_unit_, arg_type_, arg_fit_ );
+	verificar_creacion_particion ( arg_path, arg_name, valor_arg*arg_unit_, arg_type_, arg_fit_ );
+	if(DEPURADOR)
+		imprimir_mbr ( arg_path );
 }
 
 #endif // ADMINISTRADOR_PARTICIONES_H

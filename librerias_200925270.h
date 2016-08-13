@@ -43,26 +43,27 @@
 
 #include "io_200925270.h"
 #include "funciones_200925270.h"
-#include "buffer_entrada_200925270.h"
 
 #include "parametro_200925270.h"
 #include "instruccion_200925270.h"
 
 #include "particion_200925270.h"
+#include "mbr_200925270.h"
+#include "ebr_200925270.h"
+
+#include "manejador_particiones_200925270.h"
 #include "administrador_particiones_200925270.h"
 
+#include "montar_200925270.h"
 
 #include "unidad_disco_200925270.h"
 #include "manejador_disco_200925270.h"
 #include "administrador_disco_200925270.h"
 
+#include "manejador_reportes_200925270.h"
+#include "administrador_reporte_200925270.h"
 
-
-
-
-
-
-
+#include "buffer_entrada_200925270.h"
 #include "analizador_200925270.h"
 #include "interprete_200925270.h"
 

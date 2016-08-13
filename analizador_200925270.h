@@ -25,6 +25,7 @@ inline void analizar_entrada ( char _entrada[], accion **_instruccion )
 {
 	if(DEPURADOR)
 		printf("\n\t(Entrada Del Analizador: %s)", _entrada);
+
 	int longitud = strlen ( _entrada );
 	(*_instruccion) = parsear_cadena_entrada ( _entrada, longitud );
 	//accion *instruccion = parsear_cadena_entrada ( _entrada, longitud );
@@ -185,7 +186,7 @@ static inline int validar_instruccion ( char _instruccion[] )
 {
 	convertir_minusculas ( _instruccion, _instruccion );
 	if ( strcmp( _instruccion, "rep" ) == 0 )
-		return 0;
+		return REP;
 	else if ( strcmp( _instruccion, "ren" ) == 0 )
 		return 0;
 	else if ( strcmp( _instruccion, "rem" ) == 0 )
@@ -329,6 +330,15 @@ static inline parametro *validar_parametro ( char _nombre[], char _valor[] )
 		if(DEPURADOR)
 			printf("\n\t(Valor del Parametro: %s)", _valor);
 		return nuevo_parametro ( DELETE, _valor );
+	} 
+	else if ( strcmp( _nombre, "id" ) == 0 )
+	{
+		convertir_minusculas ( _valor, _valor );
+		if(DEPURADOR)
+			printf("\n\t(Nombre Parametro: %s)", _nombre);
+		if(DEPURADOR)
+			printf("\n\t(Valor del Parametro: %s)", _valor);
+		return nuevo_parametro ( ID, _valor );
 	} 
 	else if ( strcmp( _nombre, "error" ) == 0 )
 	{

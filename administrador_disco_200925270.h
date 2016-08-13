@@ -118,6 +118,9 @@ inline void validar_eliminacion_disco ( parametro **_parametros, parametro **_er
 
 inline void validar_montar_disco ( parametro **_parametros, parametro **_errores )
 {
+	if(DEPURADOR)
+		printf("\n\t(Entrada Del Administrador de Disco)");
+
 	parametro *errores = NULL;
 	if( cantidad_parametros ( (*_parametros) ) == 0 ) {
 		agregar_parametro ( &errores, ERROR, "Debe de ingresar al menos un parametro." );
@@ -132,6 +135,9 @@ inline void validar_montar_disco ( parametro **_parametros, parametro **_errores
 		agregar_parametro ( &errores, ERROR, "No existe el parametro <<path>>" );
 	}
     
+	if(DEPURADOR)
+		printf("\n\t(Buscando parametro: PATH)");
+
 	/*
 	 *  ARGUMENTO NAME OBLIGATORIO
 	 */
@@ -140,6 +146,9 @@ inline void validar_montar_disco ( parametro **_parametros, parametro **_errores
 	if ( !buscar_parametro ( _parametros, NAME, arg_name ) ) {
 		agregar_parametro ( &errores, ERROR, "No existe el parametro <<name>>" );
 	}
+
+	if(DEPURADOR)
+		printf("\n\t(Buscando parametro: NAME)");
 
 	if( cantidad_parametros ( errores ) > 0 ) {
 		(*_errores) = errores;
@@ -150,7 +159,7 @@ inline void validar_montar_disco ( parametro **_parametros, parametro **_errores
 		return;
 	}
 
-	//verificar_montar_disco ( arg_path, arg_name );
+	verificar_montar_disco ( arg_path, arg_name );
 }
 
 inline void validar_desmontar_disco ( parametro **_parametros, parametro **_errores )

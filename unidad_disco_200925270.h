@@ -32,7 +32,7 @@ inline void creacion_disco_virtual ( char _arg_path[], int _arg_size )
         fwrite ( &bloque, sizeof( bloque ), 1, disco_virtual );
 
     fclose( disco_virtual );
-    printf("\n\tEl disco vitual ha sido creado exitosamente.\n" );
+    //printf("\n\tEl disco vitual ha sido creado exitosamente.\n" );
 }
 
 inline void eliminacion_disco_virtual ( char _arg_path[] ) {
